@@ -1,0 +1,76 @@
+{
+  "0": { "name": "Domingo", "type": "rest", "label": "Descanso Total", "color": "#555" },
+  "1": {
+    "name": "Lunes", "type": "workout", "label": "Pecho + Tríceps", "duration": 50, "color": "#ff4757",
+    "warmup": "5 min bici suave + rotaciones de hombro + 2 series press banca al 40% y al 60%",
+    "exercises": [
+      { "name": "Press de pecho en máquina",  "type": "fuerza",      "sets": 4, "reps": "4-5",   "rest": 150, "unit": "kg"  },
+      { "name": "Press inclinado mancuernas", "type": "hipertrofia", "sets": 3, "reps": "8-10",  "rest": 90,  "unit": "kg"  },
+      { "name": "Fondos en paralelas",        "type": "hipertrofia", "sets": 3, "reps": "10-12", "rest": 90,  "unit": "kg+" },
+      { "name": "Extensiones tríceps polea",  "type": "acabado",     "sets": 3, "reps": "15",    "rest": 45,  "unit": "kg"  }
+    ]
+  },
+  "2": {
+    "name": "Martes", "type": "workout", "label": "Espalda + Bíceps", "duration": 55, "color": "#1e90ff",
+    "warmup": "5 min remo ergómetro suave + movilidad escapular + 2 series peso muerto al 40% y al 60%",
+    "exercises": [
+      { "name": "Peso muerto en máquina / trap bar", "type": "fuerza",      "sets": 4, "reps": "4-5",   "rest": 180, "unit": "kg"  },
+      { "name": "Remo en polea baja",               "type": "hipertrofia", "sets": 4, "reps": "8-10",  "rest": 90,  "unit": "kg"  },
+      { "name": "Dominadas lastradas",              "type": "hipertrofia", "sets": 3, "reps": "8-10",  "rest": 90,  "unit": "kg+" },
+      { "name": "Face pull en polea",               "type": "acabado",     "sets": 3, "reps": "15",    "rest": 45,  "unit": "kg"  },
+      { "name": "Curl bíceps mancuernas",           "type": "acabado",     "sets": 3, "reps": "12-15", "rest": 45,  "unit": "kg"  }
+    ]
+  },
+  "3": {
+    "name": "Miércoles", "type": "workout", "label": "Piernas", "duration": 60, "color": "#ffa502",
+    "warmup": "5 min bici + movilidad de cadera + sentadilla sin peso x15 + 2 series sentadilla al 40% y al 60%",
+    "exercises": [
+      { "name": "Prensa 45º (pesada)",          "type": "fuerza",      "sets": 5, "reps": "4-5",   "rest": 180, "unit": "kg" },
+      { "name": "Hip thrust en máquina",        "type": "hipertrofia", "sets": 4, "reps": "10-12", "rest": 90,  "unit": "kg" },
+      { "name": "Zancadas con mancuernas",      "type": "hipertrofia", "sets": 3, "reps": "12",    "rest": 90,  "unit": "kg" },
+      { "name": "Extensión cuádriceps máquina", "type": "acabado",     "sets": 3, "reps": "15",    "rest": 45,  "unit": "kg" },
+      { "name": "Femoral tumbado máquina",      "type": "acabado",     "sets": 3, "reps": "15",    "rest": 45,  "unit": "kg" }
+    ]
+  },
+  "4": {
+    "name": "Jueves", "type": "workout", "label": "Hombros + Core", "duration": 50, "color": "#2ed573",
+    "warmup": "5 min elíptica + rotaciones de manguito rotador con banda + 2 series press militar al 40% y al 60%",
+    "exercises": [
+      { "name": "Press de hombros en máquina", "type": "hipertrofia", "sets": 3, "reps": "8-10",      "rest": 90, "unit": "kg"   },
+      { "name": "Elevaciones laterales",       "type": "hipertrofia", "sets": 5, "reps": "12-15",     "rest": 60, "unit": "kg"   },
+      { "name": "Pájaros inclinado",           "type": "hipertrofia", "sets": 3, "reps": "15",        "rest": 60, "unit": "kg"   },
+      { "name": "Plancha",                     "type": "core",        "sets": 4, "reps": "seg",       "rest": 45, "unit": "seg"  },
+      { "name": "Dead bug",                    "type": "core",        "sets": 4, "reps": "10 por lado","rest": 45, "unit": "reps" },
+      { "name": "Bird dog",                    "type": "core",        "sets": 4, "reps": "10 por lado","rest": 45, "unit": "reps" }
+    ]
+  },
+  "5": {
+    "name": "Viernes", "type": "workout", "label": "Full Body Fuerza", "duration": 55, "color": "#bf5af2",
+    "warmup": "5 min cardio suave + 1 serie de cada compuesto del día al 40% y al 60%",
+    "exercises": [
+      { "name": "Hack squat / prensa (pesado)",          "type": "fuerza",      "sets": 5, "reps": "3",  "rest": 210, "unit": "kg" },
+      { "name": "Press pecho máquina (pesado)",           "type": "fuerza",      "sets": 5, "reps": "3",  "rest": 210, "unit": "kg" },
+      { "name": "Remo en máquina (pesado)",               "type": "fuerza",      "sets": 5, "reps": "3",  "rest": 210, "unit": "kg" },
+      { "name": "Peso muerto rumano",                     "type": "hipertrofia", "sets": 3, "reps": "5",  "rest": 150, "unit": "kg" },
+      { "name": "Superserie: Curl bíceps en polea",       "type": "hipertrofia", "sets": 3, "reps": "10", "rest": 0,   "unit": "kg" },
+      { "name": "Superserie: Extensión tríceps en polea", "type": "hipertrofia", "sets": 3, "reps": "10", "rest": 60,  "unit": "kg" }
+    ]
+  },
+  "6": {
+    "name": "Sábado", "type": "cardio", "label": "Cardio + Isométricos + Movilidad", "duration": 70, "color": "#5ac8fa",
+    "warmup": "3 min trote suave + movilidad general articular",
+    "exercises": [
+      { "name": "HIIT (sprints / bici / remo)",    "type": "cardio",     "sets": 8, "reps": "30s trabajo / 1min descanso", "rest": 0,  "unit": "min"  },
+      { "name": "Wall Sit",                        "type": "isometrico", "sets": 3, "reps": "45-60 seg",     "rest": 60, "unit": "seg"  },
+      { "name": "Split Squat ISO",                 "type": "isometrico", "sets": 3, "reps": "30-45 seg/lado","rest": 60, "unit": "seg"  },
+      { "name": "Dead Hang",                       "type": "isometrico", "sets": 3, "reps": "20-40 seg",     "rest": 60, "unit": "seg"  },
+      { "name": "Plank + Extensión de Cadera",     "type": "isometrico", "sets": 3, "reps": "20-30 seg/lado","rest": 60, "unit": "seg"  },
+      { "name": "Pike Push-up ISO",                "type": "isometrico", "sets": 3, "reps": "15-30 seg",     "rest": 60, "unit": "seg"  },
+      { "name": "Towel Row ISO",                   "type": "isometrico", "sets": 3, "reps": "20-40 seg",     "rest": 60, "unit": "seg"  },
+      { "name": "Plancha lateral",                 "type": "core",       "sets": 3, "reps": "seg por lado",  "rest": 30, "unit": "seg"  },
+      { "name": "Hollow hold",                     "type": "core",       "sets": 3, "reps": "seg",           "rest": 30, "unit": "seg"  },
+      { "name": "Dragon flag",                     "type": "core",       "sets": 3, "reps": "reps",          "rest": 30, "unit": "reps" },
+      { "name": "Movilidad y estiramientos",       "type": "movilidad",  "sets": 1, "reps": "15-20 min",     "rest": 0,  "unit": "min"  }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+# Credenciales y secretos
+credentials*.json
+token*.json
+*.key
+*.pem
+.env
+.env.local
+secrets/
+*secret*
+*password*
+*api_key*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Claude local
+.claude/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Datos personales de entrenamiento (si son sensibles)
+# gym_data.json - comentado por si quieres versionarlo
+# gymplan.json - comentado por si quieres versionarlo

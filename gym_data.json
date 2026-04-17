@@ -1,0 +1,446 @@
+{
+  "sessions": [
+    {
+      "date": "2026-04-16",
+      "time": "18:40",
+      "dow": 4,
+      "label": "Hombros + Core",
+      "exercises": [
+        {
+          "name": "Press de hombros en máquina",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 9,
+              "reps": 50,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 9,
+              "reps": 45,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 9,
+              "reps": 45,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Elevaciones laterales",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 12,
+              "reps": 14,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 11,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 9,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 9,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Pájaros inclinado",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 8,
+              "reps": 9,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 9,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 8,
+              "reps": 9,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Plancha",
+          "type": "core",
+          "unit": "seg",
+          "sets": [
+            {
+              "value": 0,
+              "done": true,
+              "unit": "seg"
+            },
+            {
+              "value": 0,
+              "done": true,
+              "unit": "seg"
+            },
+            {
+              "value": 0,
+              "done": true,
+              "unit": "seg"
+            },
+            {
+              "value": 0,
+              "done": true,
+              "unit": "seg"
+            }
+          ]
+        },
+        {
+          "name": "Dead bug",
+          "type": "core",
+          "unit": "reps",
+          "sets": [
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            }
+          ]
+        },
+        {
+          "name": "Bird dog",
+          "type": "core",
+          "unit": "reps",
+          "sets": [
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            },
+            {
+              "value": 0,
+              "done": false,
+              "unit": "reps"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-04-15",
+      "time": "23:12",
+      "dow": 3,
+      "label": "Piernas",
+      "exercises": [
+        {
+          "name": "Prensa 45º (pesada)",
+          "type": "fuerza",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 160,
+              "reps": 7,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 200,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 200,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 180,
+              "reps": 5,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Hip thrust en máquina",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 15,
+              "reps": 10,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 15,
+              "reps": 10,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 15,
+              "reps": 8,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 10,
+              "reps": 8,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Zancadas con mancuernas",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 6,
+              "reps": 18,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 6,
+              "reps": 16,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 6,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Extensión cuádriceps máquina",
+          "type": "acabado",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 30,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 30,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 30,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Femoral tumbado máquina",
+          "type": "acabado",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-04-14",
+      "time": "19:37",
+      "dow": 1,
+      "label": "Pecho + Tríceps",
+      "exercises": [
+        {
+          "name": "Press de pecho en máquina",
+          "type": "fuerza",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 80,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 80,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 80,
+              "reps": 4,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 80,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Press inclinado mancuernas",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 40,
+              "reps": 10,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 40,
+              "reps": 8,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 40,
+              "reps": 8,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Fondos en paralelas",
+          "type": "hipertrofia",
+          "unit": "kg+",
+          "sets": [
+            {
+              "kg": 100,
+              "reps": 10,
+              "done": true,
+              "unit": "kg+"
+            },
+            {
+              "kg": 90,
+              "reps": 12,
+              "done": true,
+              "unit": "kg+"
+            },
+            {
+              "kg": 90,
+              "reps": 8,
+              "done": true,
+              "unit": "kg+"
+            }
+          ]
+        },
+        {
+          "name": "Extensiones tríceps polea",
+          "type": "acabado",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 12.5,
+              "reps": 10,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 12.5,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 12.5,
+              "reps": 12,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "weights": []
+}
