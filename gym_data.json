@@ -1,6 +1,200 @@
 {
   "sessions": [
     {
+      "date": "2026-04-17",
+      "time": "18:36",
+      "dow": 5,
+      "label": "Full Body Fuerza",
+      "exercises": [
+        {
+          "name": "Hack squat / prensa (pesado)",
+          "type": "fuerza",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 60,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 60,
+              "reps": 6,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 70,
+              "reps": 6,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 80,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 90,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Press pecho máquina (pesado)",
+          "type": "fuerza",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 0,
+              "reps": 5,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 4,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 4,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 65,
+              "reps": 3,
+              "done": true,
+              "unit": "kg"
+            },
+            {
+              "kg": 65,
+              "reps": 3,
+              "done": true,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Remo en máquina (pesado)",
+          "type": "fuerza",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 70,
+              "reps": 3,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Peso muerto rumano",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Superserie: Curl bíceps en polea",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        },
+        {
+          "name": "Superserie: Extensión tríceps en polea",
+          "type": "hipertrofia",
+          "unit": "kg",
+          "sets": [
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            },
+            {
+              "kg": 0,
+              "reps": 0,
+              "done": false,
+              "unit": "kg"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "date": "2026-04-16",
       "time": "18:40",
       "dow": 4,
