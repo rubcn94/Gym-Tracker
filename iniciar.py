@@ -81,6 +81,22 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-Type', 'application/json')
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": str(e)}).encode())
+        elif parsed.path == '/api/git-pull':
+            try:
+                result = subprocess.run(
+                    ['git', 'pull'],
+                    capture_output=True, text=True, cwd=FOLDER, timeout=30
+                )
+                output = result.stdout + result.stderr
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": result.returncode == 0, "output": output}).encode())
+            except Exception as e:
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode())
         else:
             self.send_response(404)
             self.end_headers()
