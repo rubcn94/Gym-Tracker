@@ -21,7 +21,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Variables
-PROJECT_DIR="/storage/emulated/0/Documents/GymTracker"
+PROJECT_DIR="/storage/emulated/0/Documents/Acabado/gym_tracker"
 SCRIPT_NAME="iniciar_android.sh"
 WIDGET_NAME="GymTracker"
 STOP_WIDGET="GymTracker-Stop"
