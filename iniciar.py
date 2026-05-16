@@ -105,21 +105,34 @@ class MyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         # Silenciar logs para mejor rendimiento en móvil
         pass
 
-def find_free_port(start_port=8000, max_attempts=10):
+def try_port(port):
+    """Intenta usar un puerto específico, retorna True si está libre"""
     import socket
-    for port in range(start_port, start_port + max_attempts):
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.bind(("", port))
-            sock.close()
-            return port
-        except OSError:
-            continue
-    return 8000
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind(("", port))
+        sock.close()
+        return True
+    except OSError:
+        return False
 
-PORT = find_free_port()
-
+# Habilitar reutilización de puerto ANTES de intentar bind
 socketserver.TCPServer.allow_reuse_address = True
+
+# Intentar usar puerto 8000 primero, solo buscar otro si está ocupado
+if try_port(8000):
+    PORT = 8000
+else:
+    print("⚠️  Puerto 8000 ocupado, buscando alternativa...")
+    # Buscar puerto libre solo si 8000 falla
+    import socket
+    for port in range(8001, 8010):
+        if try_port(port):
+            PORT = port
+            break
+    else:
+        PORT = 8000  # Intentar 8000 de todos modos con reuse_address
 
 print("=" * 50)
 print(" GYM TRACKER — CALISTENIA")
