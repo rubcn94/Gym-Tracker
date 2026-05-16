@@ -2,7 +2,7 @@
   "name": "GymTracker - Calistenia",
   "short_name": "GymTracker",
   "description": "Registro de entrenamientos de calistenia y peso corporal",
-  "start_url": "./gymtracker.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#0f0f0f",
@@ -27,14 +27,14 @@
       "name": "Entrenamiento de hoy",
       "short_name": "Hoy",
       "description": "Abrir entrenamiento del día",
-      "url": "./gymtracker.html",
+      "url": "./index.html",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Historial",
       "short_name": "Historial",
       "description": "Ver historial de entrenamientos",
-      "url": "./gymtracker.html#historial",
+      "url": "./index.html#historial",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]

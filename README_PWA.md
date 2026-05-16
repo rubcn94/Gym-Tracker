@@ -18,7 +18,7 @@ Aplicación web progresiva (PWA) para registrar entrenamientos de calistenia y f
 
 1. **Abrir el archivo HTML:**
    ```
-   Doble click en: gymtracker.html
+   Doble click en: index.html
    ```
 
 2. **Instalar como PWA:**
@@ -36,13 +36,13 @@ Si prefieres usar servidor (para desarrollo):
 python iniciar.py
 ```
 
-Luego abre: http://localhost:8000/gymtracker.html
+Luego abre: http://localhost:8000/index.html
 
 ## 📂 Estructura de Archivos
 
 ```
 GymTracker/
-├── gymtracker.html      # App principal (PWA)
+├── index.html           # App principal (PWA)
 ├── manifest.json        # Configuración PWA
 ├── sw.js                # Service Worker (offline)
 ├── icon-192.png         # Icono pequeño

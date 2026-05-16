@@ -2,7 +2,7 @@
 const CACHE_NAME = 'gymtracker-v1';
 const urlsToCache = [
   './',
-  './gymtracker.html',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
