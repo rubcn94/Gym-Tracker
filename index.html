@@ -140,6 +140,10 @@
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    @keyframes slideFromRight { from { transform: translateX(40px); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideFromLeft  { from { transform: translateX(-40px); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
+    .page.slide-right { animation: slideFromRight 0.2s ease-out; }
+    .page.slide-left  { animation: slideFromLeft  0.2s ease-out; }
     .autosave-badge { font-size: 11px; color: var(--green); opacity: 0; transition: opacity 0.4s; padding: 6px 0 2px; text-align: right; height: 20px; }
     .autosave-badge.show { opacity: 1; }
     .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -573,26 +577,28 @@ function saveData(d, silent) {
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
 function clearTempSession() { tempSession=null; localStorage.removeItem('gymtracker_temp'); }
 let tempSession=null, restTimerInterval=null, currentPage='Hoy', chartInstances={};
-function goPage(name) {
-  // Si salimos de la página Hoy, guardar cambios pendientes y limpiar cronómetro
-  if(currentPage === 'Hoy' && name !== 'Hoy') {
-    if(autoSaveTimer && tempSession) {
-      clearTimeout(autoSaveTimer);
-      doAutoSave(tempSession.dow);
-    }
-    if(restTimerInterval) {
-      clearInterval(restTimerInterval);
-      restTimerInterval = null;
-    }
+const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
+let hoyRenderedDow=null, hoyNeedsRender=true;
+function invalidateHoy(){hoyNeedsRender=true;}
+function goPage(name,swipeDir) {
+  // Guardar autoguardado pendiente al salir de Hoy (pero NO matar el timer)
+  if(currentPage==='Hoy'&&name!=='Hoy'&&autoSaveTimer&&tempSession){
+    clearTimeout(autoSaveTimer);doAutoSave(tempSession.dow);
   }
-
+  const prevPage=currentPage;
   currentPage=name;
-  localStorage.setItem('gymtracker_currentPage', name);
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  localStorage.setItem('gymtracker_currentPage',name);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active','slide-right','slide-left'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page'+name).classList.add('active');
-  document.querySelectorAll('.nav-btn')[['Hoy','Historial','Progreso','Config'].indexOf(name)].classList.add('active');
-  if(name==='Hoy')renderHoy(); if(name==='Historial')renderHistorial(); if(name==='Progreso')renderProgreso(); if(name==='Config')renderConfig();
+  const pageEl=document.getElementById('page'+name);
+  pageEl.classList.add('active');
+  if(swipeDir){pageEl.classList.add('slide-'+swipeDir);setTimeout(()=>pageEl.classList.remove('slide-right','slide-left'),250);}
+  document.querySelectorAll('.nav-btn')[PAGES_ORDER.indexOf(name)].classList.add('active');
+  const todayDow=new Date().getDay();
+  if(name==='Hoy'){if(hoyNeedsRender||hoyRenderedDow!==todayDow){renderHoy();hoyRenderedDow=todayDow;hoyNeedsRender=false;}}
+  if(name==='Historial')renderHistorial();
+  if(name==='Progreso')renderProgreso();
+  if(name==='Config')renderConfig();
 }
 function renderHoy(dayOverride) {
   const now=new Date();
@@ -789,33 +795,34 @@ function restRemaining(){
   if(!restTimerState.running)return restTimerState.pausedRemaining||0;
   return Math.max(0,Math.ceil((restTimerState.endTime-Date.now())/1000));
 }
+function saveRestState(){try{if(restTimerState)sessionStorage.setItem('restTimerState',JSON.stringify(restTimerState));else sessionStorage.removeItem('restTimerState');}catch(e){}}
 function restTick(){
   if(!restTimerState||!restTimerState.running)return;
   const rem=restRemaining();
   if(rem<=0){
     clearInterval(restTimerInterval);restTimerInterval=null;
     restTimerState.running=false;restTimerState.done=true;
-    updateRestTimerUI();
+    saveRestState();updateRestTimerUI();
     showToast('⏰ ¡Descanso terminado!','success');playBeep();
     if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
-  }else{updateRestTimerUI();}
+  }else{saveRestState();updateRestTimerUI();}
 }
 function startRest(secs,dow,exIdx){
   if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
   restTimerState={secs,dow,exIdx,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
-  updateRestTimerUI();
+  saveRestState();updateRestTimerUI();
   restTimerInterval=setInterval(restTick,500);
 }
 function stopRest(){
   if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
   if(restTimerState){restTimerState.running=false;restTimerState.pausedRemaining=restRemaining();}
-  updateRestTimerUI();
+  saveRestState();updateRestTimerUI();
 }
 function resumeRest(){
   if(!restTimerState||restTimerState.running)return;
   restTimerState.endTime=Date.now()+restTimerState.pausedRemaining*1000;
   restTimerState.running=true;
-  updateRestTimerUI();
+  saveRestState();updateRestTimerUI();
   restTimerInterval=setInterval(restTick,500);
 }
 function updateRestTimerUI(){
@@ -1006,6 +1013,7 @@ function deleteSession(idx){
   const data=getData();
   data.sessions.splice(idx,1);
   saveData(data);
+  invalidateHoy();
   showToast('🗑️ Sesión eliminada','success');
   renderHistorial();
 }
@@ -1057,6 +1065,7 @@ function saveEditedSession(idx){
     });
   });
   saveData(data);
+  invalidateHoy();
   closeModal();
   showToast('✅ Sesión actualizada','success');
   renderHistorial();
@@ -1094,8 +1103,34 @@ function formatRest(secs){if(secs>=60)return Math.floor(secs/60)+':'+String(secs
 let toastTimeout;
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>{t.className='toast';},2500);}
 try{const t=localStorage.getItem('gymtracker_temp');if(t)tempSession=JSON.parse(t);}catch(e){}
+// Restaurar timer de sessionStorage si había uno activo
+try{
+  const ts=sessionStorage.getItem('restTimerState');
+  if(ts){
+    restTimerState=JSON.parse(ts);
+    if(restTimerState&&restTimerState.running){
+      // Reactivar interval si aún no ha terminado
+      if(restRemaining()>0){restTimerInterval=setInterval(restTick,500);}
+      else{restTimerState.running=false;restTimerState.done=true;}
+    }
+  }
+}catch(e){}
 const savedPage=localStorage.getItem('gymtracker_currentPage')||'Hoy';
 goPage(savedPage);
+
+// Swipe para cambiar de pestaña
+(function(){
+  let sx=0,sy=0,st=0;
+  document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy,dt=Date.now()-st;
+    if(dt<400&&Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.5){
+      const idx=PAGES_ORDER.indexOf(currentPage);
+      if(dx<0&&idx<PAGES_ORDER.length-1)goPage(PAGES_ORDER[idx+1],'right');
+      else if(dx>0&&idx>0)goPage(PAGES_ORDER[idx-1],'left');
+    }
+  },{passive:true});
+})();
 
 // Registrar Service Worker para PWA
 if('serviceWorker' in navigator){
