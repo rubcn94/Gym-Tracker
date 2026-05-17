@@ -208,6 +208,9 @@
     </div>
   </div>
 </div>
+<div id="pageEditSession" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto">
+  <div id="editSessionContent"></div>
+</div>
 <script>
 const PLAN = {
   "0": {
@@ -664,7 +667,7 @@ async function autoBackupToFolder(silent) {
 }
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
 function clearTempSession() { tempSession=null; localStorage.removeItem('gymtracker_temp'); }
-let tempSession=null, currentPage='Hoy', chartInstances={};
+let tempSession=null, currentPage='Hoy', chartInstances={}, editingSessionIdx=null;
 const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
 let hoyRenderedDow=null, hoyNeedsRender=true;
 function invalidateHoy(){hoyNeedsRender=true;}
@@ -1128,55 +1131,69 @@ function deleteSession(idx){
   renderHistorial();
 }
 function editSession(idx){
-  const data=getData(),session=data.sessions[idx];
-  document.getElementById('modalTitle').textContent='Editar sesión';
-  document.getElementById('modalMsg').innerHTML=`<div style="margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:10px;text-align:left;"><div style="font-size:13px;color:var(--text2);">${formatDateLong2(session.date)} · ${session.time}</div><div style="font-size:16px;font-weight:700;margin-top:4px;">${session.label}</div></div><div id="editForm"></div>`;
-  document.getElementById('modalConfirmBtn').textContent='Guardar cambios';
-  document.getElementById('modalConfirmBtn').onclick=()=>{saveEditedSession(idx);};
-  document.getElementById('modalOverlay').classList.add('open');
-  setTimeout(()=>{renderEditForm(idx);},50);
+  if(tempSession&&Object.keys(tempSession.data||{}).length>0){
+    const plan=PLAN[tempSession.dow];
+    document.getElementById('modalTitle').textContent='Sesión en curso';
+    document.getElementById('modalMsg').textContent=`Tienes una sesión de ${plan?plan.label:''} sin guardar. ¿Guardarla antes de editar?`;
+    const btn=document.getElementById('modalConfirmBtn');
+    btn.textContent='Guardar y editar';
+    btn.style.background='var(--accent)';btn.style.color='#000';
+    btn.onclick=()=>{
+      if(autoSaveTimer){clearTimeout(autoSaveTimer);autoSaveTimer=null;}
+      doAutoSave(tempSession.dow);
+      closeModal();openEditPage(idx);
+    };
+    document.getElementById('modalOverlay').classList.add('open');
+    return;
+  }
+  openEditPage(idx);
 }
-function renderEditForm(idx){
+function openEditPage(idx){
+  editingSessionIdx=idx;
   const data=getData(),session=data.sessions[idx];
-  let html='';
-  session.exercises.forEach((ex,exIdx)=>{
-    const hasKgReps=ex.sets[0]&&ex.sets[0].kg!==undefined&&ex.sets[0].reps!==undefined;
-    html+=`<div style="background:var(--bg);border-radius:10px;padding:12px;margin-bottom:10px;text-align:left;"><div style="font-size:14px;font-weight:700;margin-bottom:8px;">${ex.name}</div>`;
-
+  let html=`<div style="position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid #222;padding:14px 16px;display:flex;align-items:center;gap:12px"><button onclick="closeEditPage()" style="background:var(--bg2);border:none;color:var(--text);padding:8px 14px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0">← Volver</button><div style="min-width:0"><div style="font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${session.label}</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(session.date)} · ${session.time}</div></div></div><div style="padding:14px 16px 16px">`;
+  session.exercises.forEach((ex,exIdx)=>{html+=renderEditExBlock(ex,exIdx);});
+  html+=`</div><div style="padding:0 16px 32px"><button onclick="saveEditedSession()" style="width:100%;background:var(--accent);border:none;color:#000;padding:16px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer">💾 Guardar cambios</button></div>`;
+  document.getElementById('editSessionContent').innerHTML=html;
+  document.getElementById('pageEditSession').style.display='block';
+}
+function renderEditExBlock(ex,exIdx){
+  const hasKgReps=ex.sets[0]&&ex.sets[0].kg!==undefined;
+  let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div><table class="sets-table"><tr><th style="width:28px">#</th>`;
+  if(hasKgReps){html+=`<th>KG</th><th>REPS</th>`;}
+  else{html+=`<th>${(ex.unit||'VALOR').toUpperCase()}</th>`;}
+  html+=`</tr>`;
+  ex.sets.forEach((set,setIdx)=>{
     if(hasKgReps){
-      html+=`<div style="display:grid;grid-template-columns:repeat(${ex.sets.length>3?3:ex.sets.length},1fr);gap:6px;">`;
-      ex.sets.forEach((set,setIdx)=>{
-        html+=`<div><label style="font-size:10px;color:var(--text2);display:block;margin-bottom:2px;">S${setIdx+1}</label><div style="display:flex;gap:3px;"><input type="number" id="edit_kg_${exIdx}_${setIdx}" value="${set.kg||0}" step="2.5" min="0" placeholder="kg" style="width:50%;background:var(--bg2);border:1px solid #333;border-radius:6px;padding:6px 2px;text-align:center;color:var(--text);font-size:12px;font-weight:600;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#333'"><input type="number" id="edit_reps_${exIdx}_${setIdx}" value="${set.reps||0}" step="1" min="0" placeholder="×" style="width:50%;background:var(--bg2);border:1px solid #333;border-radius:6px;padding:6px 2px;text-align:center;color:var(--text);font-size:12px;font-weight:600;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#333'"></div></div>`;
-      });
+      html+=`<tr><td class="set-num">${setIdx+1}</td><td><input type="number" class="set-input" id="edit_kg_${exIdx}_${setIdx}" value="${set.kg||''}" placeholder="kg" step="2.5" min="0"></td><td><input type="number" class="set-input" id="edit_reps_${exIdx}_${setIdx}" value="${set.reps||''}" placeholder="reps" step="1" min="0"></td></tr>`;
     }else{
-      html+=`<div style="display:grid;grid-template-columns:repeat(${ex.sets.length>4?4:ex.sets.length},1fr);gap:6px;">`;
-      ex.sets.forEach((set,setIdx)=>{
-        html+=`<div><label style="font-size:10px;color:var(--text2);display:block;margin-bottom:2px;">S${setIdx+1}</label><input type="number" id="edit_${exIdx}_${setIdx}" value="${set.value||0}" step="${ex.unit==='kg'||ex.unit==='kg+'?'2.5':'1'}" min="0" style="width:100%;background:var(--bg2);border:1px solid #333;border-radius:6px;padding:6px 4px;text-align:center;color:var(--text);font-size:13px;font-weight:600;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#333'"></div>`;
-      });
+      html+=`<tr><td class="set-num">${setIdx+1}</td><td><input type="number" class="set-input" id="edit_val_${exIdx}_${setIdx}" value="${set.value||''}" placeholder="${ex.unit||'val'}" step="${ex.unit==='kg'||ex.unit==='kg+'?'2.5':'1'}" min="0"></td></tr>`;
     }
-    html+=`</div></div>`;
   });
-  document.getElementById('editForm').innerHTML=html;
+  return html+`</table></div>`;
 }
-function saveEditedSession(idx){
-  const data=getData(),session=data.sessions[idx];
+function closeEditPage(){
+  document.getElementById('pageEditSession').style.display='none';
+  editingSessionIdx=null;
+}
+function saveEditedSession(){
+  if(editingSessionIdx===null)return;
+  const data=getData(),session=data.sessions[editingSessionIdx];
   session.exercises.forEach((ex,exIdx)=>{
+    const hasKgReps=ex.sets[0]&&ex.sets[0].kg!==undefined;
     ex.sets.forEach((set,setIdx)=>{
-      const hasKgReps=set.kg!==undefined&&set.reps!==undefined;
       if(hasKgReps){
         const inpKg=document.getElementById(`edit_kg_${exIdx}_${setIdx}`);
         const inpReps=document.getElementById(`edit_reps_${exIdx}_${setIdx}`);
         if(inpKg)set.kg=parseFloat(inpKg.value)||0;
         if(inpReps)set.reps=parseFloat(inpReps.value)||0;
       }else{
-        const inp=document.getElementById(`edit_${exIdx}_${setIdx}`);
+        const inp=document.getElementById(`edit_val_${exIdx}_${setIdx}`);
         if(inp)set.value=parseFloat(inp.value)||0;
       }
     });
   });
-  saveData(data);
-  invalidateHoy();
-  closeModal();
+  saveData(data);invalidateHoy();closeEditPage();
   showToast('✅ Sesión actualizada','success');
   renderHistorial();
 }
@@ -1209,7 +1226,11 @@ function exportData(){const data=getData(),blob=new Blob([JSON.stringify(data,nu
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(!d.sessions)throw new Error('inválido');saveData(d);showToast('✅ Datos importados: '+d.sessions.length+' sesiones','success');renderConfig();}catch(err){showToast('❌ Archivo inválido','');}};reader.readAsText(file);}
 function confirmClear(){document.getElementById('modalTitle').textContent='¿Borrar todos los datos?';document.getElementById('modalMsg').textContent='Se eliminarán todas las sesiones y registros de peso. Esta acción no se puede deshacer.';document.getElementById('modalConfirmBtn').textContent='Borrar todo';document.getElementById('modalConfirmBtn').onclick=()=>{saveData({sessions:[],weights:[]});closeModal();showToast('🗑 Datos eliminados');renderConfig();};document.getElementById('modalOverlay').classList.add('open');}
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  const btn=document.getElementById('modalConfirmBtn');
+  btn.style.background='';btn.style.color='';
+}
 function formatDate(d){return d.toISOString().slice(0,10);}
 function formatDateLong(d){return d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});}
 function formatDateLong2(str){const d=new Date(str+'T12:00:00');return d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});}
