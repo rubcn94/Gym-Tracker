@@ -661,11 +661,16 @@ async function autoBackupToFolder(silent) {
     if (perm !== 'granted') perm = await backupDirHandle.requestPermission({ mode: 'readwrite' });
     if (perm !== 'granted') return;
     const data = getData();
-    const fileName = `gymtracker_${formatDate(new Date())}.json`;
-    const fileHandle = await backupDirHandle.getFileHandle(fileName, { create: true });
-    const writable = await fileHandle.createWritable();
-    await writable.write(JSON.stringify(data, null, 2));
-    await writable.close();
+    const json = JSON.stringify(data, null, 2);
+
+    // Archivo con fecha (historial)
+    const dated = await backupDirHandle.getFileHandle(`gymtracker_${formatDate(new Date())}.json`, { create: true });
+    const w1 = await dated.createWritable(); await w1.write(json); await w1.close();
+
+    // Archivo fijo "latest" — siempre actualizado, fácil de importar
+    const latest = await backupDirHandle.getFileHandle('gymtracker_latest.json', { create: true });
+    const w2 = await latest.createWritable(); await w2.write(json); await w2.close();
+
     if (!silent) showToast('💾 Backup guardado', 'success');
   } catch(e) {
     console.warn('Auto-backup failed:', e);
@@ -1371,7 +1376,7 @@ function renderConfig(){
 }
 function exportData(){const data=getData(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gymtracker_backup_${formatDate(new Date())}.json`;a.click();URL.revokeObjectURL(url);showToast('📤 Backup exportado','success');}
 function importData(){document.getElementById('importFile').click();}
-function handleImport(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(!d.sessions)throw new Error('inválido');saveData(d);showToast('✅ Datos importados: '+d.sessions.length+' sesiones','success');renderConfig();}catch(err){showToast('❌ Archivo inválido','');}};reader.readAsText(file);}
+function handleImport(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(!d.sessions)throw new Error('inválido');saveData(d);invalidateHoy();showToast('✅ Datos importados: '+d.sessions.length+' sesiones','success');renderConfig();}catch(err){showToast('❌ Archivo inválido','');}};reader.readAsText(file);}
 function confirmClear(){document.getElementById('modalTitle').textContent='¿Borrar todos los datos?';document.getElementById('modalMsg').textContent='Se eliminarán todas las sesiones y registros de peso. Esta acción no se puede deshacer.';document.getElementById('modalConfirmBtn').textContent='Borrar todo';document.getElementById('modalConfirmBtn').onclick=()=>{saveData({sessions:[],weights:[]});closeModal();showToast('🗑 Datos eliminados');renderConfig();};document.getElementById('modalOverlay').classList.add('open');}
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
