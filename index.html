@@ -212,7 +212,7 @@
   <div id="editSessionContent"></div>
 </div>
 <script>
-const PLAN = {
+const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
     "type": "rest",
@@ -537,6 +537,12 @@ const PLAN = {
     ]
   }
 };
+let PLAN = (() => {
+  try {
+    const p = localStorage.getItem('gymtracker_plan');
+    return p ? JSON.parse(p) : DEFAULT_PLAN;
+  } catch(e) { return DEFAULT_PLAN; }
+})();
 const PHASES = [
   { id:'volumen', name:'💪 Mini Volumen', color:'#1e90ff', start:'2026-04-01', end:'2026-06-30', kcal:'+200-300 kcal/día', protein:'160-175 g proteína', tip:'Come para crecer. Superávit pequeño. Empuja los pesos al máximo cada sesión.', goal:'Llegar a ~82 kg con más músculo', targetKg:82 },
   { id:'definicion', name:'🔥 Mini Definición', color:'#ff4757', start:'2026-07-01', end:'2026-08-10', kcal:'-400-500 kcal/día', protein:'170-180 g proteína', tip:'Mantén los pesos de volumen. No reduzcas series. El cardio del sábado es clave.', goal:'Llegar a ~79 kg definido para vacaciones', targetKg:79 },
@@ -1217,11 +1223,151 @@ function saveWeight(){const inp=document.getElementById('weightInput'),kg=parseF
 function renderWeightChart(data){if(chartInstances.weightChart)chartInstances.weightChart.destroy();const ctx=document.getElementById('weightChart')?.getContext('2d');if(!ctx)return;const points=data.weights.slice(-20);chartInstances.weightChart=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.kg),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
 function selectProgressDay(dow){localStorage.setItem('gymtracker_progressDay',dow);renderProgreso();}
 function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).reverse();if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
+const AI_SYSTEM_PROMPT = `Eres un entrenador personal experto. Genera un plan de entrenamiento semanal en formato JSON exacto para una app de gimnasio.
+
+FORMATO OBLIGATORIO (devuelve SOLO el JSON, sin markdown, sin explicaciones):
+{
+  "0": {"name":"Domingo","type":"rest","label":"Descanso Total","color":"#555"},
+  "1": {
+    "name":"Lunes",
+    "type":"workout",
+    "label":"Descripción breve del día",
+    "duration":55,
+    "color":"#1e90ff",
+    "warmup":"Descripción del calentamiento",
+    "exercises":[
+      {
+        "name":"Nombre del ejercicio en español",
+        "type":"fuerza",
+        "sets":4,
+        "reps":"6-8",
+        "rest":120,
+        "unit":"kg"
+      }
+    ]
+  }
+}
+
+REGLAS:
+- type del día: "workout" o "rest"
+- type del ejercicio: "fuerza" | "hipertrofia" | "acabado" | "core" | "cardio" | "movilidad" | "isometrico"
+- unit: "kg" (pesos libre o máquina), "reps" (ejercicio con peso corporal), "seg" (tiempo), "min" (minutos)
+- rest en segundos (0 si no hay descanso entre series)
+- sets: número entero
+- reps: string ("8-10", "12", "30 seg", etc.)
+- color: color hex representativo del día
+- Incluye los 7 días (0=domingo, 1=lunes, ..., 6=sábado)
+- Los días de descanso solo necesitan: name, type, label, color
+- Entre 4-7 ejercicios por día de entrenamiento
+- Devuelve ÚNICAMENTE el objeto JSON, sin nada más`;
+
+async function generateAIPlan() {
+  const apiKey = (localStorage.getItem('gymtracker_apikey') || '').trim();
+  const prompt = (document.getElementById('aiPromptInput')?.value || '').trim();
+  if (!apiKey) { showToast('Introduce tu API key de Anthropic', ''); return; }
+  if (!prompt) { showToast('Describe tu entrenamiento primero', ''); return; }
+
+  const btn = document.getElementById('generateBtn');
+  btn.textContent = '⏳ Generando...'; btn.disabled = true;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 4000,
+        system: AI_SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const jsonStart = text.indexOf('{'), jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1) throw new Error('Respuesta no válida');
+    const planJson = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
+
+    if (!planJson[1] || !planJson[1].exercises) throw new Error('Plan incompleto');
+
+    PLAN = planJson;
+    localStorage.setItem('gymtracker_plan', JSON.stringify(PLAN));
+    invalidateHoy(); hoyRenderedDow = null;
+    showToast('✅ Plan generado correctamente', 'success');
+    renderConfig();
+  } catch(e) {
+    showToast('❌ ' + (e.message || 'Error al generar'), '');
+  } finally {
+    if (btn) { btn.textContent = '✨ Generar plan'; btn.disabled = false; }
+  }
+}
+
+function resetPlan() {
+  PLAN = DEFAULT_PLAN;
+  localStorage.removeItem('gymtracker_plan');
+  invalidateHoy(); hoyRenderedDow = null;
+  showToast('Plan restaurado al original', 'success');
+  renderConfig();
+}
+
+function saveApiKey() {
+  const key = (document.getElementById('apiKeyInput')?.value || '').trim();
+  if (key) { localStorage.setItem('gymtracker_apikey', key); showToast('🔑 API key guardada', 'success'); }
+}
+
 function renderConfig(){
   const data=getData(),page=document.getElementById('pageConfig'),totalSessions=data.sessions.length,totalKB=Math.round(JSON.stringify(data).length/1024*10)/10;
   const folderName=backupDirHandle?backupDirHandle.name:'No configurada';
   const folderSub=backupDirHandle?`Guardando en: ${folderName}`:'Selecciona carpeta para backup automático';
-  page.innerHTML=`<div class="card-title" style="margin-bottom:12px">Datos</div><div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"><div class="config-row" onclick="selectBackupFolder()"><div class="config-row-left"><div class="config-row-label">📂 Backup automático en carpeta</div><div class="config-row-sub">${folderSub}</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="card-title" style="margin:20px 0 12px">Información</div><div class="card" style="font-size:13px;color:var(--text2);line-height:1.8"><div>💡 App PWA - Funciona sin internet</div><div>💡 Los datos se guardan localmente en tu dispositivo</div><div>💡 Haz backups regularmente para no perder datos</div></div><button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;
+  const hasCustomPlan=!!localStorage.getItem('gymtracker_plan');
+  const savedKey=localStorage.getItem('gymtracker_apikey')||'';
+  const planDays=Object.values(PLAN).filter(d=>d.type==='workout').map(d=>d.label).join(', ');
+
+  page.innerHTML=`
+  <div class="card-title" style="margin-bottom:12px">Datos</div>
+  <div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+  <div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+  <div class="config-row" onclick="selectBackupFolder()"><div class="config-row-left"><div class="config-row-label">📂 Backup automático en carpeta</div><div class="config-row-sub">${folderSub}</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+
+  <div class="card-title" style="margin:24px 0 12px">✨ Plan IA con Claude</div>
+  <div class="card" style="padding:16px">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">
+      Plan actual: <b style="color:${hasCustomPlan?'var(--accent)':'#fff'}">${hasCustomPlan?'Personalizado ✓':'Por defecto'}</b>
+      ${hasCustomPlan?`<br><span style="font-size:11px;color:#555">${planDays}</span>`:''}
+    </div>
+    <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">API Key de Anthropic</label>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." value="${savedKey}"
+        style="flex:1;background:var(--bg3);border:1px solid #333;border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;outline:none"
+        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#333'">
+      <button onclick="saveApiKey()" style="background:var(--bg3);border:1px solid #333;border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Guardar</button>
+    </div>
+    <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:4px">Describe tu entrenamiento</label>
+    <textarea id="aiPromptInput" placeholder="Ej: Voy al gym 4 días a la semana, quiero ganar músculo. Tengo acceso a máquinas, mancuernas y barra. Hago Lunes/Miércoles/Viernes/Sábado. Nivel intermedio, llevo 1 año entrenando."
+      style="width:100%;background:var(--bg3);border:1px solid #333;border-radius:10px;padding:12px;color:var(--text);font-size:13px;outline:none;resize:vertical;min-height:100px;font-family:inherit;box-sizing:border-box"
+      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='#333'"></textarea>
+    <button id="generateBtn" onclick="generateAIPlan()" style="width:100%;margin-top:10px;background:var(--accent);border:none;color:#000;padding:13px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer">✨ Generar plan</button>
+    ${hasCustomPlan?`<button onclick="resetPlan()" style="width:100%;margin-top:8px;background:transparent;border:1px solid #444;color:var(--text2);padding:11px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer">Restaurar plan original</button>`:''}
+  </div>
+
+  <div class="card-title" style="margin:20px 0 12px">Información</div>
+  <div class="card" style="font-size:13px;color:var(--text2);line-height:1.8">
+    <div>💡 App PWA - Funciona sin internet</div>
+    <div>💡 Los datos se guardan localmente en tu dispositivo</div>
+    <div>💡 La API key se guarda solo en este dispositivo</div>
+  </div>
+  <button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;
 }
 function exportData(){const data=getData(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gymtracker_backup_${formatDate(new Date())}.json`;a.click();URL.revokeObjectURL(url);showToast('📤 Backup exportado','success');}
 function importData(){document.getElementById('importFile').click();}
