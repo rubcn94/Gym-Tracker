@@ -640,6 +640,7 @@ function renderHoy(dayOverride) {
   else{plan.exercises.forEach((ex,i)=>{html+=renderExerciseInput(ex,i,todayDow,false);});html+=`<div class="autosave-badge" id="autosaveBadge">✓ Guardado automáticamente</div><button class="btn-finish" onclick="saveSession(${todayDow})">💾 Guardar Sesión</button>`;}
   page.innerHTML=html;
   if(tempSession&&tempSession.dow===todayDow)restoreTempInputs(todayDow);
+  updateRestTimerUI();
 }
 function getLastExerciseValues(exName){
   const data=getData();
@@ -782,14 +783,63 @@ function saveHIITKm(dow,exIdx,value){
   scheduleAutoSave(dow);
 }
 function playBeep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,0.25,0.5].forEach(delay=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=delay===0.5?1046:880;gain.gain.setValueAtTime(0.6,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+0.18);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.2);});}catch(e){}}
+let restTimerState=null; // {secs,dow,exIdx,remaining,running,done}
 function startRest(secs,dow,exIdx){
   if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
-  let remaining=secs;
-  const labelEl=document.getElementById(`timerLabel_${dow}_${exIdx}`),btnEl=document.getElementById(`timerBtn_${dow}_${exIdx}`);
-  if(!labelEl||!btnEl)return;
-  btnEl.textContent='⏹ Parar';btnEl.style.background='var(--red)';
-  btnEl.onclick=function(e){e.stopPropagation();clearInterval(restTimerInterval);restTimerInterval=null;labelEl.innerHTML=`Descanso: <b>${formatRest(secs)}</b>`;btnEl.textContent='⏱ Iniciar';btnEl.style.background='var(--accent)';btnEl.onclick=function(e2){e2.stopPropagation();startRest(secs,dow,exIdx);};};
-  restTimerInterval=setInterval(function(){remaining--;const lbl=document.getElementById(`timerLabel_${dow}_${exIdx}`),btn=document.getElementById(`timerBtn_${dow}_${exIdx}`);if(!lbl){clearInterval(restTimerInterval);return;}if(remaining>0){lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(remaining)}</b>`;}else{clearInterval(restTimerInterval);restTimerInterval=null;lbl.innerHTML=`<b style="color:var(--green)">✅ ¡Listo!</b>`;if(btn){btn.textContent='⏱ Iniciar';btn.style.background='var(--accent)';btn.onclick=function(e){e.stopPropagation();startRest(secs,dow,exIdx);};}showToast('⏰ ¡Descanso terminado!','success');playBeep();if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);}},1000);
+  restTimerState={secs,dow,exIdx,remaining:secs,running:true,done:false};
+  updateRestTimerUI();
+  restTimerInterval=setInterval(function(){
+    if(!restTimerState||!restTimerState.running)return;
+    restTimerState.remaining--;
+    if(restTimerState.remaining<=0){
+      clearInterval(restTimerInterval);restTimerInterval=null;
+      restTimerState.running=false;restTimerState.done=true;
+      updateRestTimerUI();
+      showToast('⏰ ¡Descanso terminado!','success');playBeep();
+      if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+    }else{updateRestTimerUI();}
+  },1000);
+}
+function stopRest(){
+  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
+  if(restTimerState){restTimerState.running=false;}
+  updateRestTimerUI();
+}
+function updateRestTimerUI(){
+  if(!restTimerState)return;
+  const{secs,dow,exIdx,remaining,running,done}=restTimerState;
+  const lbl=document.getElementById(`timerLabel_${dow}_${exIdx}`);
+  const btn=document.getElementById(`timerBtn_${dow}_${exIdx}`);
+  if(!lbl||!btn)return;
+  if(done){
+    lbl.innerHTML=`<b style="color:var(--green)">✅ ¡Listo!</b>`;
+    btn.textContent='⏱ Iniciar';btn.style.background='var(--accent)';
+    btn.onclick=(e)=>{e.stopPropagation();startRest(secs,dow,exIdx);};
+  }else if(running){
+    lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(remaining)}</b>`;
+    btn.textContent='⏹ Parar';btn.style.background='var(--red)';
+    btn.onclick=(e)=>{e.stopPropagation();stopRest();};
+  }else{
+    lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(remaining)}</b>`;
+    btn.textContent='▶ Continuar';btn.style.background='var(--accent)';
+    btn.onclick=(e)=>{e.stopPropagation();resumeRest();};
+  }
+}
+function resumeRest(){
+  if(!restTimerState||restTimerState.running)return;
+  restTimerState.running=true;
+  updateRestTimerUI();
+  restTimerInterval=setInterval(function(){
+    if(!restTimerState||!restTimerState.running)return;
+    restTimerState.remaining--;
+    if(restTimerState.remaining<=0){
+      clearInterval(restTimerInterval);restTimerInterval=null;
+      restTimerState.running=false;restTimerState.done=true;
+      updateRestTimerUI();
+      showToast('⏰ ¡Descanso terminado!','success');playBeep();
+      if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+    }else{updateRestTimerUI();}
+  },1000);
 }
 let autoSaveTimer=null;
 function scheduleAutoSave(dow){
