@@ -144,6 +144,12 @@
     @keyframes slideFromLeft  { from { transform: translateX(-40px); opacity: 0.5; } to { transform: translateX(0); opacity: 1; } }
     .page.slide-right { animation: slideFromRight 0.2s ease-out; }
     .page.slide-left  { animation: slideFromLeft  0.2s ease-out; }
+    #floatingTimer { display:none; position:fixed; top:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; background:var(--bg2); border-bottom:2px solid var(--accent); padding:8px 20px; z-index:150; display:none; align-items:center; justify-content:space-between; }
+    #floatingTimer.active { display:flex; }
+    #floatingTimerLabel { font-size:15px; font-weight:800; color:var(--accent); }
+    #floatingTimerSub { font-size:11px; color:var(--text2); }
+    #floatingTimerBtn { background:var(--red); border:none; color:#fff; padding:6px 14px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; }
+    body.has-timer .header { padding-top:52px; }
     .autosave-badge { font-size: 11px; color: var(--green); opacity: 0; transition: opacity 0.4s; padding: 6px 0 2px; text-align: right; height: 20px; }
     .autosave-badge.show { opacity: 1; }
     .cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -165,6 +171,10 @@
   </style>
 </head>
 <body>
+<div id="floatingTimer">
+  <div><div id="floatingTimerLabel">⏳ 0:00</div><div id="floatingTimerSub">Descanso activo</div></div>
+  <button id="floatingTimerBtn" onclick="goPage('Hoy')">Ver →</button>
+</div>
 <div class="header">
   <h1>Gym<span>Tracker</span></h1>
   <div class="header-sub" id="headerSub">Cargando...</div>
@@ -581,10 +591,8 @@ const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
 let hoyRenderedDow=null, hoyNeedsRender=true;
 function invalidateHoy(){hoyNeedsRender=true;}
 function goPage(name,swipeDir) {
-  // Al salir de Hoy: guardar autoguardado y PAUSAR interval del timer (endTime se preserva)
-  if(currentPage==='Hoy'&&name!=='Hoy'){
-    if(autoSaveTimer&&tempSession){clearTimeout(autoSaveTimer);doAutoSave(tempSession.dow);}
-    if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
+  if(currentPage==='Hoy'&&name!=='Hoy'&&autoSaveTimer&&tempSession){
+    clearTimeout(autoSaveTimer);doAutoSave(tempSession.dow);
   }
   currentPage=name;
   localStorage.setItem('gymtracker_currentPage',name);
@@ -597,16 +605,7 @@ function goPage(name,swipeDir) {
   const todayDow=new Date().getDay();
   if(name==='Hoy'){
     if(hoyNeedsRender||hoyRenderedDow!==todayDow){renderHoy();hoyRenderedDow=todayDow;hoyNeedsRender=false;}
-    else{updateRestTimerUI();}  // mostrar tiempo correcto inmediatamente al volver
-    // Reiniciar interval si el timer seguía activo
-    if(restTimerState&&restTimerState.running&&!restTimerInterval){
-      if(restRemaining()<=0){
-        restTimerState.running=false;restTimerState.done=true;
-        saveRestState();updateRestTimerUI();
-        showToast('⏰ ¡Descanso terminado!','success');playBeep();
-        if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
-      }else{restTimerInterval=setInterval(restTick,500);}
-    }
+    else{updateRestTimerUI();}
   }
   if(name==='Historial')renderHistorial();
   if(name==='Progreso')renderProgreso();
@@ -848,6 +847,18 @@ function updateRestTimerUI(){
   if(!restTimerState)return;
   const{secs,dow,exIdx,running,done}=restTimerState;
   const rem=restRemaining();
+  // Actualizar widget flotante (visible en todas las pestañas)
+  const ft=document.getElementById('floatingTimer');
+  const fl=document.getElementById('floatingTimerLabel');
+  if(ft&&fl){
+    if(running&&rem>0){
+      ft.classList.add('active');document.body.classList.add('has-timer');
+      fl.textContent=`⏳ ${formatRest(rem)}`;
+    }else{
+      ft.classList.remove('active');document.body.classList.remove('has-timer');
+    }
+  }
+  // Actualizar botones del ejercicio (solo si están en el DOM)
   const lbl=document.getElementById(`timerLabel_${dow}_${exIdx}`);
   const btn=document.getElementById(`timerBtn_${dow}_${exIdx}`);
   if(!lbl||!btn)return;
