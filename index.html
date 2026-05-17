@@ -1261,7 +1261,9 @@ initBackupDir();
   document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();},{passive:true});
   document.addEventListener('touchend',e=>{
     const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy,dt=Date.now()-st;
-    if(dt<400&&Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.5){
+    const vel=Math.abs(dx)/dt; // px/ms
+    const lowerHalf=sy>window.innerHeight*0.5;
+    if(lowerHalf&&dt<300&&vel>0.5&&Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.5){
       const idx=PAGES_ORDER.indexOf(currentPage);
       if(dx<0&&idx<PAGES_ORDER.length-1)goPage(PAGES_ORDER[idx+1],'right');
       else if(dx>0&&idx>0)goPage(PAGES_ORDER[idx-1],'left');
