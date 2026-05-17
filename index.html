@@ -575,6 +575,7 @@ function saveData(d, silent) {
   // Guardar en localStorage
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    autoBackupToFolder(true);
     return true;
   } catch(e) {
     console.error('Error guardando datos:', e);
@@ -582,6 +583,83 @@ function saveData(d, silent) {
       showToast('⚠️ Error al guardar', '');
     }
     return false;
+  }
+}
+
+// --- Auto-backup to folder (File System Access API) ---
+let backupDirHandle = null;
+
+function getBackupDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('gymBackupDB', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('handles');
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = e => reject(e);
+  });
+}
+
+async function saveBackupHandle(handle) {
+  try {
+    const db = await getBackupDB();
+    const tx = db.transaction('handles', 'readwrite');
+    tx.objectStore('handles').put(handle, 'backupDir');
+  } catch(e) {}
+}
+
+async function loadBackupHandle() {
+  try {
+    const db = await getBackupDB();
+    return new Promise(resolve => {
+      const tx = db.transaction('handles', 'readonly');
+      const req = tx.objectStore('handles').get('backupDir');
+      req.onsuccess = e => resolve(e.target.result || null);
+      req.onerror = () => resolve(null);
+    });
+  } catch(e) { return null; }
+}
+
+async function initBackupDir() {
+  backupDirHandle = await loadBackupHandle();
+  if (backupDirHandle) {
+    try {
+      const perm = await backupDirHandle.queryPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') backupDirHandle = null;
+    } catch(e) { backupDirHandle = null; }
+  }
+}
+
+async function selectBackupFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    showToast('Tu navegador no soporta esta función', '');
+    return;
+  }
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', startIn: 'documents' });
+    backupDirHandle = handle;
+    await saveBackupHandle(handle);
+    showToast('📁 Carpeta configurada', 'success');
+    await autoBackupToFolder(false);
+    renderConfig();
+  } catch(e) {
+    if (e.name !== 'AbortError') showToast('Error al seleccionar carpeta', '');
+  }
+}
+
+async function autoBackupToFolder(silent) {
+  if (!backupDirHandle) return;
+  try {
+    let perm = await backupDirHandle.queryPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') perm = await backupDirHandle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') return;
+    const data = getData();
+    const fileName = `gymtracker_${formatDate(new Date())}.json`;
+    const fileHandle = await backupDirHandle.getFileHandle(fileName, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(JSON.stringify(data, null, 2));
+    await writable.close();
+    if (!silent) showToast('💾 Backup guardado', 'success');
+  } catch(e) {
+    console.warn('Auto-backup failed:', e);
   }
 }
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
@@ -1121,7 +1199,12 @@ function saveWeight(){const inp=document.getElementById('weightInput'),kg=parseF
 function renderWeightChart(data){if(chartInstances.weightChart)chartInstances.weightChart.destroy();const ctx=document.getElementById('weightChart')?.getContext('2d');if(!ctx)return;const points=data.weights.slice(-20);chartInstances.weightChart=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.kg),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
 function selectProgressDay(dow){localStorage.setItem('gymtracker_progressDay',dow);renderProgreso();}
 function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).reverse();if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
-function renderConfig(){const data=getData(),page=document.getElementById('pageConfig'),totalSessions=data.sessions.length,totalKB=Math.round(JSON.stringify(data).length/1024*10)/10;page.innerHTML=`<div class="card-title" style="margin-bottom:12px">Datos</div><div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"><div class="card-title" style="margin:20px 0 12px">Información</div><div class="card" style="font-size:13px;color:var(--text2);line-height:1.8"><div>💡 App PWA - Funciona sin internet</div><div>💡 Los datos se guardan localmente en tu dispositivo</div><div>💡 Haz backups regularmente para no perder datos</div></div><button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;}
+function renderConfig(){
+  const data=getData(),page=document.getElementById('pageConfig'),totalSessions=data.sessions.length,totalKB=Math.round(JSON.stringify(data).length/1024*10)/10;
+  const folderName=backupDirHandle?backupDirHandle.name:'No configurada';
+  const folderSub=backupDirHandle?`Guardando en: ${folderName}`:'Selecciona carpeta para backup automático';
+  page.innerHTML=`<div class="card-title" style="margin-bottom:12px">Datos</div><div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"><div class="config-row" onclick="selectBackupFolder()"><div class="config-row-left"><div class="config-row-label">📂 Backup automático en carpeta</div><div class="config-row-sub">${folderSub}</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="card-title" style="margin:20px 0 12px">Información</div><div class="card" style="font-size:13px;color:var(--text2);line-height:1.8"><div>💡 App PWA - Funciona sin internet</div><div>💡 Los datos se guardan localmente en tu dispositivo</div><div>💡 Haz backups regularmente para no perder datos</div></div><button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;
+}
 function exportData(){const data=getData(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gymtracker_backup_${formatDate(new Date())}.json`;a.click();URL.revokeObjectURL(url);showToast('📤 Backup exportado','success');}
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(!d.sessions)throw new Error('inválido');saveData(d);showToast('✅ Datos importados: '+d.sessions.length+' sesiones','success');renderConfig();}catch(err){showToast('❌ Archivo inválido','');}};reader.readAsText(file);}
@@ -1149,6 +1232,7 @@ try{
 }catch(e){}
 const savedPage=localStorage.getItem('gymtracker_currentPage')||'Hoy';
 goPage(savedPage);
+initBackupDir();
 
 // Swipe para cambiar de pestaña
 (function(){
