@@ -888,7 +888,7 @@ function restRemaining(){
   if(!restTimerState.running)return restTimerState.pausedRemaining||0;
   return Math.max(0,Math.ceil((restTimerState.endTime-Date.now())/1000));
 }
-function saveRestState(){try{if(restTimerState)sessionStorage.setItem('restTimerState',JSON.stringify(restTimerState));else sessionStorage.removeItem('restTimerState');}catch(e){}}
+function saveRestState(){try{if(restTimerState)localStorage.setItem('restTimerState',JSON.stringify(restTimerState));else localStorage.removeItem('restTimerState');}catch(e){}}
 function restRAF(){
   if(!restTimerState||!restTimerState.running){restRafId=null;return;}
   const rem=restRemaining();
@@ -1239,9 +1239,9 @@ function formatRest(secs){if(secs>=60)return Math.floor(secs/60)+':'+String(secs
 let toastTimeout;
 function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>{t.className='toast';},2500);}
 try{const t=localStorage.getItem('gymtracker_temp');if(t)tempSession=JSON.parse(t);}catch(e){}
-// Restaurar timer de sessionStorage si había uno activo
+// Restaurar timer de localStorage si había uno activo
 try{
-  const ts=sessionStorage.getItem('restTimerState');
+  const ts=localStorage.getItem('restTimerState');
   if(ts){
     restTimerState=JSON.parse(ts);
     if(restTimerState&&restTimerState.running){
