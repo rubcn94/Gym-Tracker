@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo -->
+  <rect width="512" height="512" fill="#0f0f0f" rx="80"/>
+
+  <!-- Mancuerna estilizada -->
+  <g transform="translate(256, 256)">
+    <!-- Barra central -->
+    <rect x="-140" y="-15" width="280" height="30" fill="#e8ff47" rx="15"/>
+
+    <!-- Peso izquierdo -->
+    <g transform="translate(-140, 0)">
+      <rect x="-30" y="-50" width="30" height="100" fill="#e8ff47" rx="5"/>
+      <rect x="-50" y="-40" width="20" height="80" fill="#c8df30" rx="3"/>
+      <rect x="-65" y="-35" width="15" height="70" fill="#a8bf10" rx="2"/>
+    </g>
+
+    <!-- Peso derecho -->
+    <g transform="translate(140, 0)">
+      <rect x="0" y="-50" width="30" height="100" fill="#e8ff47" rx="5"/>
+      <rect x="30" y="-40" width="20" height="80" fill="#c8df30" rx="3"/>
+      <rect x="50" y="-35" width="15" height="70" fill="#a8bf10" rx="2"/>
+    </g>
+
+    <!-- Detalles -->
+    <circle cx="-60" cy="0" r="8" fill="#0f0f0f" opacity="0.3"/>
+    <circle cx="60" cy="0" r="8" fill="#0f0f0f" opacity="0.3"/>
+  </g>
+</svg>

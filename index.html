@@ -6,6 +6,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f0f0f">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <title>GymTracker</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
@@ -202,48 +205,6 @@ const PLAN = {
   "1": {
     "name": "Lunes",
     "type": "workout",
-    "label": "Pecho + Tríceps",
-    "duration": 50,
-    "color": "#ff4757",
-    "warmup": "5 min bici suave + rotaciones de hombro + 2 series press banca al 40% y al 60%",
-    "exercises": [
-      {
-        "name": "Press de pecho en máquina",
-        "type": "fuerza",
-        "sets": 4,
-        "reps": "4-5",
-        "rest": 150,
-        "unit": "kg"
-      },
-      {
-        "name": "Press inclinado mancuernas",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "8-10",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Fondos en paralelas",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "10-12",
-        "rest": 90,
-        "unit": "kg+"
-      },
-      {
-        "name": "Extensiones tríceps polea",
-        "type": "acabado",
-        "sets": 3,
-        "reps": "15",
-        "rest": 45,
-        "unit": "kg"
-      }
-    ]
-  },
-  "2": {
-    "name": "Martes",
-    "type": "workout",
     "label": "Espalda + Bíceps",
     "duration": 55,
     "color": "#1e90ff",
@@ -278,7 +239,7 @@ const PLAN = {
         "type": "acabado",
         "sets": 3,
         "reps": "15",
-        "rest": 45,
+        "rest": 60,
         "unit": "kg"
       },
       {
@@ -286,7 +247,49 @@ const PLAN = {
         "type": "acabado",
         "sets": 3,
         "reps": "12-15",
-        "rest": 45,
+        "rest": 75,
+        "unit": "kg"
+      }
+    ]
+  },
+  "2": {
+    "name": "Martes",
+    "type": "workout",
+    "label": "Pecho + Tríceps",
+    "duration": 50,
+    "color": "#ff4757",
+    "warmup": "5 min bici suave + rotaciones de hombro + 2 series press banca al 40% y al 60%",
+    "exercises": [
+      {
+        "name": "Press de pecho en máquina",
+        "type": "fuerza",
+        "sets": 4,
+        "reps": "4-5",
+        "rest": 180,
+        "unit": "kg"
+      },
+      {
+        "name": "Press inclinado mancuernas",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "8-10",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Fondos en paralelas",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "10-12",
+        "rest": 90,
+        "unit": "kg+"
+      },
+      {
+        "name": "Extensiones tríceps polea",
+        "type": "acabado",
+        "sets": 3,
+        "reps": "15",
+        "rest": 75,
         "unit": "kg"
       }
     ]
@@ -294,17 +297,75 @@ const PLAN = {
   "3": {
     "name": "Miércoles",
     "type": "workout",
+    "label": "Hombros + Core",
+    "duration": 50,
+    "color": "#2ed573",
+    "warmup": "5 min elíptica + rotaciones de manguito rotador con banda + 2 series press militar al 40% y al 60%",
+    "exercises": [
+      {
+        "name": "Press de hombros en máquina",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "8-10",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Elevaciones laterales",
+        "type": "hipertrofia",
+        "sets": 5,
+        "reps": "12-15",
+        "rest": 75,
+        "unit": "kg"
+      },
+      {
+        "name": "Pájaros inclinado",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "15",
+        "rest": 75,
+        "unit": "kg"
+      },
+      {
+        "name": "Plancha",
+        "type": "core",
+        "sets": 4,
+        "reps": "seg",
+        "rest": 60,
+        "unit": "seg"
+      },
+      {
+        "name": "Dead bug",
+        "type": "core",
+        "sets": 4,
+        "reps": "10 por lado",
+        "rest": 60,
+        "unit": "reps"
+      },
+      {
+        "name": "Bird dog",
+        "type": "core",
+        "sets": 4,
+        "reps": "10 por lado",
+        "rest": 60,
+        "unit": "reps"
+      }
+    ]
+  },
+  "4": {
+    "name": "Jueves",
+    "type": "workout",
     "label": "Piernas",
     "duration": 60,
     "color": "#ffa502",
     "warmup": "5 min bici + movilidad de cadera + sentadilla sin peso x15 + 2 series sentadilla al 40% y al 60%",
     "exercises": [
       {
-        "name": "Prensa 45º (pesada)",
+        "name": "Sentadilla goblet profunda",
         "type": "fuerza",
         "sets": 5,
         "reps": "4-5",
-        "rest": 180,
+        "rest": 120,
         "unit": "kg"
       },
       {
@@ -328,7 +389,7 @@ const PLAN = {
         "type": "acabado",
         "sets": 3,
         "reps": "15",
-        "rest": 45,
+        "rest": 60,
         "unit": "kg"
       },
       {
@@ -336,66 +397,16 @@ const PLAN = {
         "type": "acabado",
         "sets": 3,
         "reps": "15",
-        "rest": 45,
-        "unit": "kg"
-      }
-    ]
-  },
-  "4": {
-    "name": "Jueves",
-    "type": "workout",
-    "label": "Hombros + Core",
-    "duration": 50,
-    "color": "#2ed573",
-    "warmup": "5 min elíptica + rotaciones de manguito rotador con banda + 2 series press militar al 40% y al 60%",
-    "exercises": [
-      {
-        "name": "Press de hombros en máquina",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "8-10",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Elevaciones laterales",
-        "type": "hipertrofia",
-        "sets": 5,
-        "reps": "12-15",
         "rest": 60,
         "unit": "kg"
       },
       {
-        "name": "Pájaros inclinado",
-        "type": "hipertrofia",
+        "name": "Gemelos sentado máquina",
+        "type": "acabado",
         "sets": 3,
-        "reps": "15",
+        "reps": "15-20",
         "rest": 60,
         "unit": "kg"
-      },
-      {
-        "name": "Plancha",
-        "type": "core",
-        "sets": 4,
-        "reps": "seg",
-        "rest": 45,
-        "unit": "seg"
-      },
-      {
-        "name": "Dead bug",
-        "type": "core",
-        "sets": 4,
-        "reps": "10 por lado",
-        "rest": 45,
-        "unit": "reps"
-      },
-      {
-        "name": "Bird dog",
-        "type": "core",
-        "sets": 4,
-        "reps": "10 por lado",
-        "rest": 45,
-        "unit": "reps"
       }
     ]
   },
@@ -408,11 +419,11 @@ const PLAN = {
     "warmup": "5 min cardio suave + 1 serie de cada compuesto del día al 40% y al 60%",
     "exercises": [
       {
-        "name": "Hack squat / prensa (pesado)",
+        "name": "Extensión de cuádriceps",
         "type": "fuerza",
         "sets": 5,
         "reps": "3",
-        "rest": 210,
+        "rest": 120,
         "unit": "kg"
       },
       {
@@ -420,7 +431,7 @@ const PLAN = {
         "type": "fuerza",
         "sets": 5,
         "reps": "3",
-        "rest": 210,
+        "rest": 180,
         "unit": "kg"
       },
       {
@@ -428,7 +439,7 @@ const PLAN = {
         "type": "fuerza",
         "sets": 5,
         "reps": "3",
-        "rest": 210,
+        "rest": 180,
         "unit": "kg"
       },
       {
@@ -452,7 +463,7 @@ const PLAN = {
         "type": "hipertrofia",
         "sets": 3,
         "reps": "10",
-        "rest": 60,
+        "rest": 90,
         "unit": "kg"
       }
     ]
@@ -466,67 +477,36 @@ const PLAN = {
     "warmup": "3 min trote suave + movilidad general articular",
     "exercises": [
       {
-        "name": "HIIT (sprints / bici / remo)",
+        "name": "HIIT en bici",
         "type": "cardio",
         "sets": 8,
         "reps": "30s trabajo / 1min descanso",
         "rest": 0,
-        "unit": "min"
-      },
-      {
-        "name": "Wall Sit",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "45-60 seg",
-        "rest": 60,
-        "unit": "seg"
-      },
-      {
-        "name": "Split Squat ISO",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "30-45 seg/lado",
-        "rest": 60,
-        "unit": "seg"
+        "unit": "min",
+        "hasKm": true
       },
       {
         "name": "Dead Hang",
         "type": "isometrico",
         "sets": 3,
         "reps": "20-40 seg",
-        "rest": 60,
-        "unit": "seg"
-      },
-      {
-        "name": "Plank + Extensión de Cadera",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "20-30 seg/lado",
-        "rest": 60,
+        "rest": 90,
         "unit": "seg"
       },
       {
         "name": "Pike Push-up ISO",
         "type": "isometrico",
         "sets": 3,
-        "reps": "15-30 seg",
-        "rest": 60,
-        "unit": "seg"
-      },
-      {
-        "name": "Towel Row ISO",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "20-40 seg",
-        "rest": 60,
-        "unit": "seg"
+        "reps": "15-30",
+        "rest": 90,
+        "unit": "reps"
       },
       {
         "name": "Plancha lateral",
         "type": "core",
         "sets": 3,
         "reps": "seg por lado",
-        "rest": 30,
+        "rest": 45,
         "unit": "seg"
       },
       {
@@ -534,24 +514,8 @@ const PLAN = {
         "type": "core",
         "sets": 3,
         "reps": "seg",
-        "rest": 30,
+        "rest": 45,
         "unit": "seg"
-      },
-      {
-        "name": "Dragon flag",
-        "type": "core",
-        "sets": 3,
-        "reps": "reps",
-        "rest": 30,
-        "unit": "reps"
-      },
-      {
-        "name": "Movilidad y estiramientos",
-        "type": "movilidad",
-        "sets": 1,
-        "reps": "15-20 min",
-        "rest": 0,
-        "unit": "min"
       }
     ]
   }
@@ -564,19 +528,18 @@ const VACATION_DATE = new Date('2026-08-10');
 function getCurrentPhase() { const today=formatDate(new Date()); return PHASES.find(p=>today>=p.start&&today<=p.end)||null; }
 function daysUntilVacation() { const now=new Date(); now.setHours(0,0,0,0); return Math.max(0,Math.ceil((VACATION_DATE-now)/(1000*60*60*24))); }
 function phaseProgress(phase) { const now=new Date(); now.setHours(0,0,0,0); const s=new Date(phase.start),e=new Date(phase.end); return Math.min(100,Math.max(0,Math.round(((now-s)/(e-s))*100))); }
-// Sistema directo a archivo JSON via API
+// Sistema de almacenamiento local (PWA - sin servidor)
+const STORAGE_KEY = 'gymtracker_data';
 let dataCache = null;
 
 function getData() {
   if (dataCache) return dataCache;
 
-  // Cargar desde API (sync con XMLHttpRequest para compatibilidad)
+  // Cargar desde localStorage
   try {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', '/api/data', false); // false = síncrono
-    xhr.send();
-    if (xhr.status === 200) {
-      const data = JSON.parse(xhr.responseText);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const data = JSON.parse(stored);
       if(!data.sessions) data.sessions = [];
       if(!data.weights) data.weights = [];
       dataCache = data;
@@ -584,33 +547,45 @@ function getData() {
     }
   } catch(e) {
     console.error('Error cargando datos:', e);
-    alert('⚠️ Error: El servidor no está corriendo. Ejecuta iniciar.py primero.');
   }
 
-  return {sessions: [], weights: []};
+  // Datos por defecto
+  const defaultData = {sessions: [], weights: []};
+  dataCache = defaultData;
+  return defaultData;
 }
 
-function saveData(d) {
+function saveData(d, silent) {
   dataCache = d;
 
-  // Guardar en API (síncrono para asegurar que se guarda antes de continuar)
+  // Guardar en localStorage
   try {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/data', false); // false = síncrono para garantizar escritura
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify(d));
-    if (xhr.status !== 200) {
-      throw new Error('Error al guardar');
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    return true;
   } catch(e) {
     console.error('Error guardando datos:', e);
-    alert('⚠️ Error al guardar. Verifica que el servidor esté corriendo.');
+    if(!silent) {
+      showToast('⚠️ Error al guardar', '');
+    }
+    return false;
   }
 }
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
 function clearTempSession() { tempSession=null; localStorage.removeItem('gymtracker_temp'); }
 let tempSession=null, restTimerInterval=null, currentPage='Hoy', chartInstances={};
 function goPage(name) {
+  // Si salimos de la página Hoy, guardar cambios pendientes y limpiar cronómetro
+  if(currentPage === 'Hoy' && name !== 'Hoy') {
+    if(autoSaveTimer && tempSession) {
+      clearTimeout(autoSaveTimer);
+      doAutoSave(tempSession.dow);
+    }
+    if(restTimerInterval) {
+      clearInterval(restTimerInterval);
+      restTimerInterval = null;
+    }
+  }
+
   currentPage=name;
   localStorage.setItem('gymtracker_currentPage', name);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -620,7 +595,32 @@ function goPage(name) {
   if(name==='Hoy')renderHoy(); if(name==='Historial')renderHistorial(); if(name==='Progreso')renderProgreso(); if(name==='Config')renderConfig();
 }
 function renderHoy(dayOverride) {
-  const now=new Date(), todayDow=dayOverride!==undefined?dayOverride:now.getDay(), plan=PLAN[todayDow], dateStr=formatDate(now);
+  const now=new Date();
+  let todayDow;
+
+  // Si hay un autoguardado pendiente y tempSession activa, ejecutar autoguardado inmediatamente
+  if(autoSaveTimer && tempSession) {
+    clearTimeout(autoSaveTimer);
+    doAutoSave(tempSession.dow);
+  }
+
+  // Limpiar cronómetro activo antes de cambiar de día
+  if(restTimerInterval) {
+    clearInterval(restTimerInterval);
+    restTimerInterval = null;
+  }
+
+  if(dayOverride !== undefined) {
+    // Usuario seleccionó un día específico, guardarlo para mantener la vista
+    todayDow = dayOverride;
+    localStorage.setItem('gymtracker_selectedDay', dayOverride);
+  } else {
+    // Restaurar el día guardado si existe, sino usar hoy
+    const savedDay = localStorage.getItem('gymtracker_selectedDay');
+    todayDow = savedDay !== null ? parseInt(savedDay) : now.getDay();
+  }
+
+  const plan=PLAN[todayDow], dateStr=formatDate(now);
   document.getElementById('headerSub').textContent=formatDateLong(now);
   const page=document.getElementById('pageHoy'); let html='';
   html+='<div class="day-selector">';
@@ -656,28 +656,45 @@ function renderExerciseInput(ex,idx,dow,small){
   const lastSets = getLastExerciseValues(ex.name);
 
   let html=`<div class="exercise-block" id="exblock_${idx}"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type}">${ex.type}</div></div><div class="ex-prescription">${ex.sets} series · ${ex.reps} reps${ex.rest>0?' · '+formatRest(ex.rest)+' descanso':''}</div>`;
-  if(lastSets){html+=`<div style="font-size:10px;color:var(--text2);margin-bottom:6px;opacity:0.7">Última vez: ${lastSets.slice(0,3).map(s=>s.kg!==undefined?`${s.kg}kg×${s.reps}`:`${s.value||0}${ex.unit}`).join(' · ')}${lastSets.length>3?'…':''}</div>`;}
-  html+=`<table class="sets-table"><tr><th style="width:28px">#</th>`;
 
-  if(isWeightEx && !isCoreEx) {
-    html+=`<th>KG</th><th>REPS</th>`;
-  } else {
-    html+=`<th>${ex.unit==='seg'||ex.unit==='reps'||ex.unit==='min'?ex.unit.toUpperCase():'KG'}</th>`;
-  }
-  html+=`<th style="width:40px">✓</th></tr>`;
-
-  for(let s=0;s<ex.sets;s++){
-    const ls=lastSets&&lastSets[s]?lastSets[s]:null;
-    if(isWeightEx && !isCoreEx) {
-      const phKg=ls&&ls.kg?ls.kg:'kg';
-      const phReps=ls&&ls.reps?ls.reps:'reps';
-      html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="inp_kg_${dow}_${idx}_${s}" placeholder="${phKg}" min="0" step="2.5" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><input type="number" class="set-input" id="inp_reps_${dow}_${idx}_${s}" placeholder="${phReps}" min="0" step="1" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><button class="set-done-btn" id="done_${dow}_${idx}_${s}" onclick="toggleDone(${dow},${idx},${s})">○</button></td></tr>`;
-    } else {
-      const phVal=ls&&ls.value?ls.value:(ex.unit==='seg'?'seg':ex.unit==='min'?'min':'reps');
-      html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="inp_${dow}_${idx}_${s}" placeholder="${phVal}" min="0" step="${ex.unit==='kg'||ex.unit==='kg+'?'2.5':'1'}" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><button class="set-done-btn" id="done_${dow}_${idx}_${s}" onclick="toggleDone(${dow},${idx},${s})">○</button></td></tr>`;
+  // Ejercicios de core: solo checkboxes simples
+  if(ex.type==='core'){
+    html+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">`;
+    for(let s=0;s<ex.sets;s++){
+      html+=`<button class="set-done-btn" id="done_${dow}_${idx}_${s}" onclick="toggleDone(${dow},${idx},${s})" style="width:50px;height:50px;font-size:18px;">○</button>`;
     }
+    html+=`</div>`;
+  } else {
+    // Ejercicios normales: tabla con inputs
+    html+=`<table class="sets-table"><tr><th style="width:28px">#</th>`;
+
+    if(isWeightEx && !isCoreEx) {
+      html+=`<th>KG</th><th>REPS</th>`;
+    } else {
+      html+=`<th>${ex.unit==='seg'||ex.unit==='reps'||ex.unit==='min'?ex.unit.toUpperCase():'KG'}</th>`;
+    }
+    html+=`<th style="width:40px">✓</th></tr>`;
+
+    for(let s=0;s<ex.sets;s++){
+      const ls=lastSets&&lastSets[s]?lastSets[s]:null;
+      if(isWeightEx && !isCoreEx) {
+        const phKg=ls&&ls.kg?ls.kg:'kg';
+        const phReps=ls&&ls.reps?ls.reps:'reps';
+        html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="inp_kg_${dow}_${idx}_${s}" placeholder="${phKg}" min="0" step="2.5" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><input type="number" class="set-input" id="inp_reps_${dow}_${idx}_${s}" placeholder="${phReps}" min="0" step="1" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><button class="set-done-btn" id="done_${dow}_${idx}_${s}" onclick="toggleDone(${dow},${idx},${s})">○</button></td></tr>`;
+      } else {
+        const phVal=ls&&ls.value?ls.value:(ex.unit==='seg'?'seg':ex.unit==='min'?'min':'reps');
+        html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="inp_${dow}_${idx}_${s}" placeholder="${phVal}" min="0" step="${ex.unit==='kg'||ex.unit==='kg+'?'2.5':'1'}" onchange="onSetChange(${dow},${idx},${s})" oninput="onSetChange(${dow},${idx},${s})"></td><td><button class="set-done-btn" id="done_${dow}_${idx}_${s}" onclick="toggleDone(${dow},${idx},${s})">○</button></td></tr>`;
+      }
+    }
+    html+=`</table>`;
   }
-  html+=`</table>`;
+
+  // Campo especial para km totales si el ejercicio lo requiere (HIIT)
+  if(ex.hasKm){
+    const lastKm=localStorage.getItem(`hiit_km_${dow}_${idx}`)||'';
+    html+=`<div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><label style="font-size:13px;font-weight:600;white-space:nowrap;">KM totales:</label><input type="number" class="set-input" id="inp_km_${dow}_${idx}" placeholder="km" value="${lastKm}" min="0" step="0.1" style="flex:1;max-width:100px" oninput="saveHIITKm(${dow},${idx},this.value)"></div>`;
+  }
+
   if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:5px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;min-width:80px" onclick="startRest(${ex.rest},${dow},${idx});event.stopPropagation();">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
 }
@@ -716,12 +733,28 @@ function toggleDone(dow,exIdx,setIdx){
     if(inp)inp.classList.toggle('completed',isDone);
   }
 
+  // Guardar tanto el estado done como los valores actuales
   if(!tempSession||tempSession.dow!==dow)tempSession={dow,data:{}};
   const key=`${exIdx}_${setIdx}`;
   if(!tempSession.data[key])tempSession.data[key]={};
+
+  // Guardar valores actuales de los inputs
+  if(isWeightEx){
+    const inpKg=document.getElementById(`inp_kg_${dow}_${exIdx}_${setIdx}`);
+    const inpReps=document.getElementById(`inp_reps_${dow}_${exIdx}_${setIdx}`);
+    tempSession.data[key].kg=inpKg?inpKg.value:'';
+    tempSession.data[key].reps=inpReps?inpReps.value:'';
+  }else{
+    const inp=document.getElementById(`inp_${dow}_${exIdx}_${setIdx}`);
+    tempSession.data[key].value=inp?inp.value:'';
+  }
+
   tempSession.data[key].done=isDone;
   saveTempSession();
-  scheduleAutoSave(dow);
+
+  // Autoguardado más rápido cuando marcas como done (500ms en vez de 2s)
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer=setTimeout(()=>doAutoSave(dow),500);
 }
 function restoreTempInputs(dow){
   if(!tempSession||tempSession.dow!==dow)return;
@@ -744,6 +777,10 @@ function restoreTempInputs(dow){
       if(btn&&d.done){btn.classList.add('done');btn.textContent='✓';inp?.classList.add('completed');}
     }
   });
+}
+function saveHIITKm(dow,exIdx,value){
+  localStorage.setItem(`hiit_km_${dow}_${exIdx}`,value);
+  scheduleAutoSave(dow);
 }
 function playBeep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,0.25,0.5].forEach(delay=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=delay===0.5?1046:880;gain.gain.setValueAtTime(0.6,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+0.18);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.2);});}catch(e){}}
 let restTimerState=null; // {secs,dow,exIdx,remaining,running,done}
@@ -825,15 +862,21 @@ function doAutoSave(dow){
         sets.push({value:inp?parseFloat(inp.value)||0:0,done:btn?btn.classList.contains('done'):false,unit:ex.unit});
       }
     }
-    return{name:ex.name,type:ex.type,unit:ex.unit,sets};
+    const exData={name:ex.name,type:ex.type,unit:ex.unit,sets};
+    // Guardar km totales si el ejercicio lo requiere
+    if(ex.hasKm){
+      const kmInput=document.getElementById(`inp_km_${dow}_${exIdx}`);
+      exData.km=kmInput?parseFloat(kmInput.value)||0:0;
+    }
+    return exData;
   });
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
   const data=getData();
   const existingIdx=data.sessions.findIndex(s=>s.date===dateStr&&s.dow===dow);
   if(existingIdx>=0){data.sessions[existingIdx]=session;}else{data.sessions.unshift(session);}
-  saveData(data);
+  const success = saveData(data, true); // true = silent (autoguardado)
   const badge=document.getElementById('autosaveBadge');
-  if(badge){badge.classList.add('show');setTimeout(()=>badge.classList.remove('show'),2000);}
+  if(badge && success){badge.classList.add('show');setTimeout(()=>badge.classList.remove('show'),2000);}
 }
 function saveSession(dow){
   const plan=PLAN[dow],now=new Date(),dateStr=formatDate(now),timeStr=now.toTimeString().slice(0,5);
@@ -851,7 +894,13 @@ function saveSession(dow){
         sets.push({value:inp?parseFloat(inp.value)||0:0,done:btn?btn.classList.contains('done'):false,unit:ex.unit});
       }
     }
-    return{name:ex.name,type:ex.type,unit:ex.unit,sets};
+    const exData={name:ex.name,type:ex.type,unit:ex.unit,sets};
+    // Guardar km totales si el ejercicio lo requiere
+    if(ex.hasKm){
+      const kmInput=document.getElementById(`inp_km_${dow}_${exIdx}`);
+      exData.km=kmInput?parseFloat(kmInput.value)||0:0;
+    }
+    return exData;
   });
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
   const data=getData();
@@ -913,7 +962,7 @@ function renderSessionCard(session,idx,data){
   html+=`</div>`;
   session.exercises.forEach(ex=>{
     const weights=ex.sets.map(s=>{if(s.kg!==undefined&&s.reps!==undefined){return s.kg>0||s.reps>0?`${s.kg}kg×${s.reps}`:'-';}else{return s.value>0?`${s.value}${ex.unit==='kg'||ex.unit==='kg+'?'kg':ex.unit}`:'-';}});
-    html+=`<div class="history-ex"><div class="history-ex-name">${ex.name}</div><div class="history-sets">${weights.map(w=>`<span class="history-set-pill">${w}</span>`).join('')}</div></div>`;
+    html+=`<div class="history-ex"><div class="history-ex-name">${ex.name}${ex.km?` <span style="color:var(--accent);font-size:12px;">(${ex.km} km)</span>`:''}</div><div class="history-sets">${weights.map(w=>`<span class="history-set-pill">${w}</span>`).join('')}</div></div>`;
   });
   html+=`</div>`;
   return html;
@@ -1011,30 +1060,17 @@ function renderProgreso(){
   html+=`<div class="stats-grid"><div class="stat-box"><div class="stat-value">${totalSessions}</div><div class="stat-label">Sesiones totales</div></div><div class="stat-box"><div class="stat-value">${thisWeek}</div><div class="stat-label">Esta semana</div></div></div>`;
   if(data.weights.length>=2)html+=`<div class="chart-container"><div class="chart-title">Evolución peso corporal</div><canvas id="weightChart" class="chart-canvas"></canvas></div>`;
   if(data.weights.length>0){html+=`<div class="card"><div class="card-title">Últimos registros de peso</div>`;const recent=[...data.weights].reverse().slice(0,7);recent.forEach((w,i)=>{const prev=recent[i+1];let delta='';if(prev){const d=(w.kg-prev.kg).toFixed(1);delta=d>0?`<span class="weight-delta-up">▲ +${d}</span>`:d<0?`<span class="weight-delta-down">▼ ${d}</span>`:`<span class="weight-delta-same">→ igual</span>`;}html+=`<div class="weight-history-item"><div><div class="weight-val">${w.kg} kg</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(w.date)}</div></div><div>${delta}</div></div>`;});html+=`</div>`;}
-  if(data.sessions.length>=2){const exNames=[];data.sessions.forEach(s=>s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!exNames.includes(ex.name))exNames.push(ex.name);}));html+=`<select class="exercise-picker" id="exPicker" onchange="renderChart()">${exNames.map(n=>`<option value="${n}">${n}</option>`).join('')}</select><div class="chart-container"><div class="chart-title" id="chartTitle">Progresión por ejercicio</div><canvas id="mainChart" class="chart-canvas"></canvas></div><div class="chart-container"><div class="chart-title">Sesiones por semana</div><canvas id="volChart" class="chart-canvas"></canvas></div>`;}
+  if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';html+=`<div class="day-selector" style="margin-bottom:16px">`;[{dow:1,name:'Lun',label:'Espalda',color:'#1e90ff'},{dow:2,name:'Mar',label:'Pecho',color:'#ff4757'},{dow:3,name:'Mié',label:'Hombros',color:'#2ed573'},{dow:4,name:'Jue',label:'Piernas',color:'#ffa502'},{dow:5,name:'Vie',label:'Full Body',color:'#bf5af2'},{dow:6,name:'Sáb',label:'Cardio',color:'#5ac8fa'}].forEach(d=>{html+=`<div class="day-chip ${d.dow==selectedDay?'active':''}" style="${d.dow==selectedDay?`background:${d.color};color:#000;border-color:${d.color}`:''}" onclick="selectProgressDay(${d.dow})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label}</small></div>`;});html+=`</div><div id="dayChartContainer"></div>`;}
   else html+=`<div class="empty-state" style="padding:30px 20px"><div class="big" style="font-size:32px">📈</div><p>Necesitas al menos 2 sesiones para ver la progresión de ejercicios.</p></div>`;
   page.innerHTML=html;
   if(data.weights.length>=2)renderWeightChart(data);
-  if(data.sessions.length>=2){renderChart();renderVolChart(data);}
+  if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';renderDayChart(data,selectedDay);}
 }
 function saveWeight(){const inp=document.getElementById('weightInput'),kg=parseFloat(inp.value);if(!kg||kg<30||kg>300){showToast('Introduce un peso válido');return;}const data=getData(),today=formatDate(new Date());data.weights=data.weights.filter(w=>w.date!==today);data.weights.push({date:today,kg});data.weights.sort((a,b)=>a.date.localeCompare(b.date));saveData(data);showToast(`⚖️ ${kg} kg guardado`,'success');renderProgreso();}
 function renderWeightChart(data){if(chartInstances.weightChart)chartInstances.weightChart.destroy();const ctx=document.getElementById('weightChart')?.getContext('2d');if(!ctx)return;const points=data.weights.slice(-20);chartInstances.weightChart=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.kg),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
-function renderChart(){const data=getData(),exName=document.getElementById('exPicker')?.value;if(!exName)return;if(chartInstances.main)chartInstances.main.destroy();const points=[];[...data.sessions].reverse().forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const maxW=Math.max(...ex.sets.map(s=>s.value||0));if(maxW>0)points.push({date:s.date,weight:maxW});}});if(!points.length)return;document.getElementById('chartTitle').textContent=`${exName} — máximo por sesión`;const ctx=document.getElementById('mainChart').getContext('2d');chartInstances.main=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.weight),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
-function renderVolChart(data){if(chartInstances.vol)chartInstances.vol.destroy();const weeks={};data.sessions.forEach(s=>{const d=new Date(s.date),ws=new Date(d);ws.setDate(d.getDate()-d.getDay()+1);const wk=ws.toISOString().slice(0,10);weeks[wk]=(weeks[wk]||0)+1;});const sorted=Object.keys(weeks).sort(),ctx2=document.getElementById('volChart')?.getContext('2d');if(!ctx2)return;chartInstances.vol=new Chart(ctx2,{type:'bar',data:{labels:sorted.map(w=>'Sem '+formatDateShort(w)),datasets:[{label:'Sesiones',data:sorted.map(w=>weeks[w]),backgroundColor:'#1e90ff80',borderColor:'#1e90ff',borderWidth:1,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:true,stepSize:1}}}});}
-function renderConfig(){const data=getData(),page=document.getElementById('pageConfig'),totalSessions=data.sessions.length,totalKB=Math.round(JSON.stringify(data).length/1024*10)/10;page.innerHTML=`<div class="card-title" style="margin-bottom:12px">Datos</div><div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"><div class="card-title" style="margin:20px 0 12px">Sincronización</div><div class="config-row" onclick="gitPull()"><div class="config-row-left"><div class="config-row-label">🔄 Actualizar desde GitHub</div><div class="config-row-sub" id="gitPullSub">Descarga los últimos cambios del repositorio</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="card-title" style="margin:20px 0 12px">Información</div><div class="card" style="font-size:13px;color:var(--text2);line-height:1.8"><div>💡 Los datos se guardan en archivo JSON local.</div><div>💡 Usa el backup regularmente como copia de seguridad.</div><div>💡 "Actualizar desde GitHub" sincroniza el código de la app.</div></div><button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;}
-function gitPull(){
-  const sub=document.getElementById('gitPullSub');
-  if(sub)sub.textContent='Sincronizando...';
-  try{
-    const xhr=new XMLHttpRequest();
-    xhr.open('POST','/api/git-pull',false);
-    xhr.send();
-    const res=JSON.parse(xhr.responseText);
-    if(res.success){showToast('✅ Actualizado: '+res.output.trim().split('\n').pop(),'success');}
-    else{showToast('⚠️ '+res.error,'');}
-    if(sub)sub.textContent=res.output?res.output.trim().slice(0,60):'Descarga los últimos cambios del repositorio';
-  }catch(e){showToast('❌ Error al conectar con el servidor','');if(sub)sub.textContent='Error de conexión';}
-}
+function selectProgressDay(dow){localStorage.setItem('gymtracker_progressDay',dow);renderProgreso();}
+function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).reverse();if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
+function renderConfig(){const data=getData(),page=document.getElementById('pageConfig'),totalSessions=data.sessions.length,totalKB=Math.round(JSON.stringify(data).length/1024*10)/10;page.innerHTML=`<div class="card-title" style="margin-bottom:12px">Datos</div><div class="config-row" onclick="exportData()"><div class="config-row-left"><div class="config-row-label">📤 Exportar backup</div><div class="config-row-sub">${totalSessions} sesiones · ${totalKB}KB</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><div class="config-row" onclick="importData()"><div class="config-row-left"><div class="config-row-label">📥 Importar backup</div><div class="config-row-sub">Restaurar desde archivo JSON</div></div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)"><div class="card-title" style="margin:20px 0 12px">Información</div><div class="card" style="font-size:13px;color:var(--text2);line-height:1.8"><div>💡 App PWA - Funciona sin internet</div><div>💡 Los datos se guardan localmente en tu dispositivo</div><div>💡 Haz backups regularmente para no perder datos</div></div><button class="danger-btn" onclick="confirmClear()">🗑 Borrar todos los datos</button>`;}
 function exportData(){const data=getData(),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`gymtracker_backup_${formatDate(new Date())}.json`;a.click();URL.revokeObjectURL(url);showToast('📤 Backup exportado','success');}
 function importData(){document.getElementById('importFile').click();}
 function handleImport(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{try{const d=JSON.parse(ev.target.result);if(!d.sessions)throw new Error('inválido');saveData(d);showToast('✅ Datos importados: '+d.sessions.length+' sesiones','success');renderConfig();}catch(err){showToast('❌ Archivo inválido','');}};reader.readAsText(file);}
@@ -1050,6 +1086,15 @@ function showToast(msg,type){const t=document.getElementById('toast');t.textCont
 try{const t=localStorage.getItem('gymtracker_temp');if(t)tempSession=JSON.parse(t);}catch(e){}
 const savedPage=localStorage.getItem('gymtracker_currentPage')||'Hoy';
 goPage(savedPage);
+
+// Registrar Service Worker para PWA
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg=>console.log('Service Worker registrado'))
+      .catch(err=>console.log('Error Service Worker:',err));
+  });
+}
 </script>
 </body>
 </html>
