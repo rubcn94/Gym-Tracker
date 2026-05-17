@@ -581,11 +581,11 @@ const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
 let hoyRenderedDow=null, hoyNeedsRender=true;
 function invalidateHoy(){hoyNeedsRender=true;}
 function goPage(name,swipeDir) {
-  // Guardar autoguardado pendiente al salir de Hoy (pero NO matar el timer)
-  if(currentPage==='Hoy'&&name!=='Hoy'&&autoSaveTimer&&tempSession){
-    clearTimeout(autoSaveTimer);doAutoSave(tempSession.dow);
+  // Al salir de Hoy: guardar autoguardado y PAUSAR interval del timer (endTime se preserva)
+  if(currentPage==='Hoy'&&name!=='Hoy'){
+    if(autoSaveTimer&&tempSession){clearTimeout(autoSaveTimer);doAutoSave(tempSession.dow);}
+    if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
   }
-  const prevPage=currentPage;
   currentPage=name;
   localStorage.setItem('gymtracker_currentPage',name);
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active','slide-right','slide-left'));
@@ -595,7 +595,19 @@ function goPage(name,swipeDir) {
   if(swipeDir){pageEl.classList.add('slide-'+swipeDir);setTimeout(()=>pageEl.classList.remove('slide-right','slide-left'),250);}
   document.querySelectorAll('.nav-btn')[PAGES_ORDER.indexOf(name)].classList.add('active');
   const todayDow=new Date().getDay();
-  if(name==='Hoy'){if(hoyNeedsRender||hoyRenderedDow!==todayDow){renderHoy();hoyRenderedDow=todayDow;hoyNeedsRender=false;}}
+  if(name==='Hoy'){
+    if(hoyNeedsRender||hoyRenderedDow!==todayDow){renderHoy();hoyRenderedDow=todayDow;hoyNeedsRender=false;}
+    else{updateRestTimerUI();}  // mostrar tiempo correcto inmediatamente al volver
+    // Reiniciar interval si el timer seguía activo
+    if(restTimerState&&restTimerState.running&&!restTimerInterval){
+      if(restRemaining()<=0){
+        restTimerState.running=false;restTimerState.done=true;
+        saveRestState();updateRestTimerUI();
+        showToast('⏰ ¡Descanso terminado!','success');playBeep();
+        if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+      }else{restTimerInterval=setInterval(restTick,500);}
+    }
+  }
   if(name==='Historial')renderHistorial();
   if(name==='Progreso')renderProgreso();
   if(name==='Config')renderConfig();
@@ -645,8 +657,15 @@ function renderHoy(dayOverride) {
   if(existingToday&&!hasTempForToday){html+=`<div class="card" style="text-align:center;background:#2ed57310;border:1px solid #2ed57340"><div style="font-size:24px;margin-bottom:6px">✅</div><div style="font-size:16px;font-weight:700;color:var(--green)">Sesión completada</div><div style="font-size:13px;color:var(--text2);margin-top:4px">Registrada hoy a las ${existingToday.time}</div></div>`;html+=`<button class="btn-secondary" onclick="startSession(${todayDow},true)">Registrar otra sesión</button>`;}
   else{plan.exercises.forEach((ex,i)=>{html+=renderExerciseInput(ex,i,todayDow,false);});html+=`<div class="autosave-badge" id="autosaveBadge">✓ Guardado automáticamente</div><button class="btn-finish" onclick="saveSession(${todayDow})">💾 Guardar Sesión</button>`;}
   page.innerHTML=html;
+  hoyRenderedDow=todayDow;
   if(tempSession&&tempSession.dow===todayDow)restoreTempInputs(todayDow);
   updateRestTimerUI();
+  // Reiniciar interval si el timer sigue activo para este día
+  if(restTimerState&&restTimerState.running&&restTimerState.dow===todayDow&&!restTimerInterval){
+    if(restRemaining()<=0){
+      restTimerState.running=false;restTimerState.done=true;saveRestState();updateRestTimerUI();
+    }else{restTimerInterval=setInterval(restTick,500);}
+  }
 }
 function getLastExerciseValues(exName){
   const data=getData();
