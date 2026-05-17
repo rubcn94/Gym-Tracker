@@ -1,5 +1,5 @@
 // Service Worker para GymTracker PWA
-const CACHE_NAME = 'gymtracker-v1';
+const CACHE_NAME = 'gymtracker-v2';
 const urlsToCache = [
   './',
   './index.html',
