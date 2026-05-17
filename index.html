@@ -909,7 +909,8 @@ function restRAF(){
 }
 function startRest(secs,dow,exIdx){
   if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
-  restTimerState={secs,dow,exIdx,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
+  const exName=PLAN[dow]&&PLAN[dow].exercises[exIdx]?PLAN[dow].exercises[exIdx].name:'';
+  restTimerState={secs,dow,exIdx,exName,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
   restLastSec=-1;
   saveRestState();updateRestTimerUI();
   restRafId=requestAnimationFrame(restRAF);

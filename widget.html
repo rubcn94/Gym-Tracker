@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Timer · Gym</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      background:#0a0a0a;color:#fff;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      min-height:100svh;min-height:100vh;
+      user-select:none;-webkit-user-select:none;
+      overflow:hidden;
+    }
+    .ring{
+      position:relative;width:220px;height:220px;margin-bottom:32px;
+    }
+    .ring svg{position:absolute;inset:0;transform:rotate(-90deg);}
+    .ring-bg{stroke:#1a1a1a;stroke-width:10;fill:none;}
+    .ring-fill{stroke:#e8ff47;stroke-width:10;fill:none;stroke-linecap:round;
+      transition:stroke-dashoffset 0.9s linear;
+    }
+    .ring-center{
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+    }
+    .time{
+      font-size:64px;font-weight:900;color:#e8ff47;
+      letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1;
+    }
+    .time.done{color:#2ed573;}
+    .time.idle{color:#333;font-size:48px;}
+    .ex-name{
+      font-size:13px;color:#666;margin-top:6px;text-align:center;
+      max-width:160px;line-height:1.3;
+    }
+    .status{
+      font-size:14px;font-weight:600;color:#555;margin-bottom:24px;
+      letter-spacing:0.5px;text-transform:uppercase;
+    }
+    .status.active{color:#e8ff4799;}
+    .status.done{color:#2ed57399;}
+    .btn-row{display:flex;gap:12px;margin-top:8px;}
+    .btn{
+      padding:14px 28px;border-radius:50px;border:none;
+      font-size:15px;font-weight:800;cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn-primary{background:#e8ff47;color:#000;}
+    .btn-secondary{background:#1a1a1a;color:#fff;border:1px solid #333;}
+    .btn-stop{background:#ff475720;color:#ff4757;border:1px solid #ff475730;}
+    .pulse{animation:pulse 1s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+  </style>
+</head>
+<body>
+  <div class="status" id="status">SIN TIMER</div>
+  <div class="ring" id="ring">
+    <svg viewBox="0 0 220 220" width="220" height="220">
+      <circle class="ring-bg" cx="110" cy="110" r="100"/>
+      <circle class="ring-fill" id="ringFill" cx="110" cy="110" r="100"
+        stroke-dasharray="628" stroke-dashoffset="628"/>
+    </svg>
+    <div class="ring-center">
+      <div class="time idle" id="timeDisplay">--:--</div>
+      <div class="ex-name" id="exName"></div>
+    </div>
+  </div>
+  <div class="btn-row" id="btnRow">
+    <button class="btn btn-primary" onclick="openApp()">Abrir app</button>
+  </div>
+
+<script>
+  const CIRCUMFERENCE = 628; // 2π×100
+  let rafId = null;
+  let lastSec = -1;
+  let currentState = null;
+
+  function getState() {
+    try {
+      const ts = localStorage.getItem('restTimerState');
+      return ts ? JSON.parse(ts) : null;
+    } catch(e) { return null; }
+  }
+
+  function getRemaining(state) {
+    if (!state) return 0;
+    if (!state.running) return state.pausedRemaining || 0;
+    return Math.max(0, Math.ceil((state.endTime - Date.now()) / 1000));
+  }
+
+  function formatTime(secs) {
+    if (secs >= 60) return Math.floor(secs/60) + ':' + String(secs%60).padStart(2,'0');
+    return '0:' + String(secs).padStart(2,'0');
+  }
+
+  function setRing(fraction) {
+    const offset = CIRCUMFERENCE * (1 - Math.max(0, Math.min(1, fraction)));
+    document.getElementById('ringFill').style.strokeDashoffset = offset;
+  }
+
+  function render() {
+    const state = getState();
+    const timeEl = document.getElementById('timeDisplay');
+    const statusEl = document.getElementById('status');
+    const exNameEl = document.getElementById('exName');
+    const btnRow = document.getElementById('btnRow');
+
+    if (!state || state.done) {
+      timeEl.className = 'time idle';
+      timeEl.textContent = state && state.done ? '¡Listo!' : '--:--';
+      statusEl.textContent = state && state.done ? 'DESCANSO TERMINADO' : 'SIN TIMER';
+      statusEl.className = 'status' + (state && state.done ? ' done' : '');
+      exNameEl.textContent = state && state.done ? (state.exName || '') : '';
+      setRing(state && state.done ? 0 : 0);
+      btnRow.innerHTML = `<button class="btn btn-primary" onclick="openApp()">Abrir app</button>`;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      return;
+    }
+
+    const rem = getRemaining(state);
+    const frac = state.secs > 0 ? rem / state.secs : 0;
+
+    timeEl.textContent = formatTime(rem);
+    exNameEl.textContent = state.exName || '';
+    setRing(frac);
+
+    if (state.running && rem > 0) {
+      timeEl.className = 'time';
+      statusEl.textContent = 'DESCANSANDO';
+      statusEl.className = 'status active';
+      btnRow.innerHTML = `
+        <button class="btn btn-stop" onclick="stopTimer()">⏸ Pausar</button>
+        <button class="btn btn-secondary" onclick="openApp()">App →</button>
+      `;
+    } else if (!state.running && rem > 0) {
+      timeEl.className = 'time pulse';
+      statusEl.textContent = 'PAUSADO';
+      statusEl.className = 'status';
+      btnRow.innerHTML = `
+        <button class="btn btn-primary" onclick="resumeTimer()">▶ Reanudar</button>
+        <button class="btn btn-secondary" onclick="openApp()">App →</button>
+      `;
+    }
+  }
+
+  function tick() {
+    const state = getState();
+    const rem = state ? getRemaining(state) : 0;
+    if (rem !== lastSec) {
+      lastSec = rem;
+      render();
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // Polling para detectar cambios desde la app principal
+  setInterval(() => {
+    const state = getState();
+    const stateStr = JSON.stringify(state);
+    const prevStr = JSON.stringify(currentState);
+    if (stateStr !== prevStr) {
+      currentState = state;
+      lastSec = -1; // forzar re-render
+    }
+  }, 800);
+
+  function stopTimer() {
+    const state = getState();
+    if (!state || !state.running) return;
+    state.running = false;
+    state.pausedRemaining = getRemaining(state);
+    localStorage.setItem('restTimerState', JSON.stringify(state));
+    lastSec = -1;
+    render();
+  }
+
+  function resumeTimer() {
+    const state = getState();
+    if (!state || state.running) return;
+    state.endTime = Date.now() + state.pausedRemaining * 1000;
+    state.running = true;
+    localStorage.setItem('restTimerState', JSON.stringify(state));
+    lastSec = -1;
+    render();
+  }
+
+  function openApp() {
+    window.location.href = './index.html';
+  }
+
+  render();
+  rafId = requestAnimationFrame(tick);
+</script>
+</body>
+</html>
