@@ -586,7 +586,7 @@ function saveData(d, silent) {
 }
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
 function clearTempSession() { tempSession=null; localStorage.removeItem('gymtracker_temp'); }
-let tempSession=null, restTimerInterval=null, currentPage='Hoy', chartInstances={};
+let tempSession=null, currentPage='Hoy', chartInstances={};
 const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
 let hoyRenderedDow=null, hoyNeedsRender=true;
 function invalidateHoy(){hoyNeedsRender=true;}
@@ -621,12 +621,6 @@ function renderHoy(dayOverride) {
     doAutoSave(tempSession.dow);
   }
 
-  // Limpiar cronómetro activo antes de cambiar de día
-  if(restTimerInterval) {
-    clearInterval(restTimerInterval);
-    restTimerInterval = null;
-  }
-
   if(dayOverride !== undefined) {
     // Usuario seleccionó un día específico, guardarlo para mantener la vista
     todayDow = dayOverride;
@@ -659,11 +653,10 @@ function renderHoy(dayOverride) {
   hoyRenderedDow=todayDow;
   if(tempSession&&tempSession.dow===todayDow)restoreTempInputs(todayDow);
   updateRestTimerUI();
-  // Reiniciar interval si el timer sigue activo para este día
-  if(restTimerState&&restTimerState.running&&restTimerState.dow===todayDow&&!restTimerInterval){
-    if(restRemaining()<=0){
-      restTimerState.running=false;restTimerState.done=true;saveRestState();updateRestTimerUI();
-    }else{restTimerInterval=setInterval(restTick,500);}
+  // Reiniciar rAF si el timer sigue activo y se paró (p.ej. tras reload)
+  if(restTimerState&&restTimerState.running&&!restRafId){
+    if(restRemaining()<=0){restTimerState.running=false;restTimerState.done=true;saveRestState();updateRestTimerUI();}
+    else{restLastSec=-1;restRafId=requestAnimationFrame(restRAF);}
   }
 }
 function getLastExerciseValues(exName){
@@ -808,40 +801,49 @@ function saveHIITKm(dow,exIdx,value){
 }
 function playBeep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,0.25,0.5].forEach(delay=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=delay===0.5?1046:880;gain.gain.setValueAtTime(0.6,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+0.18);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.2);});}catch(e){}}
 let restTimerState=null; // {secs,dow,exIdx,endTime,pausedRemaining,running,done}
+let restRafId=null, restLastSec=-1;
 function restRemaining(){
   if(!restTimerState)return 0;
   if(!restTimerState.running)return restTimerState.pausedRemaining||0;
   return Math.max(0,Math.ceil((restTimerState.endTime-Date.now())/1000));
 }
 function saveRestState(){try{if(restTimerState)sessionStorage.setItem('restTimerState',JSON.stringify(restTimerState));else sessionStorage.removeItem('restTimerState');}catch(e){}}
-function restTick(){
-  if(!restTimerState||!restTimerState.running)return;
+function restRAF(){
+  if(!restTimerState||!restTimerState.running){restRafId=null;return;}
   const rem=restRemaining();
-  if(rem<=0){
-    clearInterval(restTimerInterval);restTimerInterval=null;
-    restTimerState.running=false;restTimerState.done=true;
-    saveRestState();updateRestTimerUI();
-    showToast('⏰ ¡Descanso terminado!','success');playBeep();
-    if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
-  }else{saveRestState();updateRestTimerUI();}
+  // solo redibujar cuando cambia el segundo
+  if(rem!==restLastSec){
+    restLastSec=rem;
+    updateRestTimerUI();
+    if(rem<=0){
+      restTimerState.running=false;restTimerState.done=true;
+      saveRestState();updateRestTimerUI();
+      showToast('⏰ ¡Descanso terminado!','success');playBeep();
+      if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+      restRafId=null;return;
+    }
+    saveRestState();
+  }
+  restRafId=requestAnimationFrame(restRAF);
 }
 function startRest(secs,dow,exIdx){
-  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
+  if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
   restTimerState={secs,dow,exIdx,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
+  restLastSec=-1;
   saveRestState();updateRestTimerUI();
-  restTimerInterval=setInterval(restTick,500);
+  restRafId=requestAnimationFrame(restRAF);
 }
 function stopRest(){
-  if(restTimerInterval){clearInterval(restTimerInterval);restTimerInterval=null;}
+  if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
   if(restTimerState){restTimerState.running=false;restTimerState.pausedRemaining=restRemaining();}
   saveRestState();updateRestTimerUI();
 }
 function resumeRest(){
   if(!restTimerState||restTimerState.running)return;
   restTimerState.endTime=Date.now()+restTimerState.pausedRemaining*1000;
-  restTimerState.running=true;
+  restTimerState.running=true;restLastSec=-1;
   saveRestState();updateRestTimerUI();
-  restTimerInterval=setInterval(restTick,500);
+  restRafId=requestAnimationFrame(restRAF);
 }
 function updateRestTimerUI(){
   if(!restTimerState)return;
@@ -880,7 +882,7 @@ function updateRestTimerUI(){
 document.addEventListener('visibilitychange',function(){
   if(!document.hidden&&restTimerState&&restTimerState.running){
     if(restRemaining()<=0){
-      clearInterval(restTimerInterval);restTimerInterval=null;
+      if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
       restTimerState.running=false;restTimerState.done=true;
       showToast('⏰ ¡Descanso terminado!','success');playBeep();
       if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
@@ -1140,7 +1142,7 @@ try{
     restTimerState=JSON.parse(ts);
     if(restTimerState&&restTimerState.running){
       // Reactivar interval si aún no ha terminado
-      if(restRemaining()>0){restTimerInterval=setInterval(restTick,500);}
+      if(restRemaining()>0){restLastSec=-1;restRafId=requestAnimationFrame(restRAF);}
       else{restTimerState.running=false;restTimerState.done=true;}
     }
   }
