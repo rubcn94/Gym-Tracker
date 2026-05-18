@@ -678,7 +678,7 @@ async function autoBackupToFolder(silent) {
 }
 function saveTempSession() { if(tempSession)localStorage.setItem('gymtracker_temp',JSON.stringify(tempSession)); else localStorage.removeItem('gymtracker_temp'); }
 function clearTempSession() { tempSession=null; localStorage.removeItem('gymtracker_temp'); }
-let tempSession=null, currentPage='Hoy', chartInstances={}, editingSessionIdx=null;
+let tempSession=null, currentPage='Hoy', chartInstances={}, editingSessionIdx=null, editingNewSession=null;
 const PAGES_ORDER=['Hoy','Historial','Progreso','Config'];
 let hoyRenderedDow=null, hoyNeedsRender=true;
 function invalidateHoy(){hoyNeedsRender=true;}
@@ -1084,12 +1084,21 @@ function buildCalendarHTML(data){
     html+=`</div>`;
   }
   html+=`</div></div>`;
-  if(selectedCalDate&&sessionsByDate[selectedCalDate]){
+  if(selectedCalDate){
     html+=`<div id="calDetail">`;
-    sessionsByDate[selectedCalDate].forEach(session=>{
-      const globalIdx=data.sessions.findIndex(s=>s.date===session.date&&s.time===session.time);
-      html+=renderSessionCard(session,globalIdx,data);
-    });
+    if(sessionsByDate[selectedCalDate]){
+      sessionsByDate[selectedCalDate].forEach(session=>{
+        const globalIdx=data.sessions.findIndex(s=>s.date===session.date&&s.time===session.time);
+        html+=renderSessionCard(session,globalIdx,data);
+      });
+    }
+    const selDow=new Date(selectedCalDate+'T12:00:00').getDay();
+    const selPlan=PLAN[selDow];
+    if(selPlan&&selPlan.type==='workout'){
+      html+=`<button onclick="openAddSessionPage('${selectedCalDate}')" style="width:100%;margin-top:8px;background:var(--bg2);border:1px dashed #444;color:var(--text2);padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer">➕ Añadir sesión este día</button>`;
+    }else{
+      html+=`<div style="text-align:center;padding:20px;color:#444;font-size:14px">😴 Día de descanso</div>`;
+    }
     html+=`</div>`;
   }
   return html;
@@ -1207,6 +1216,63 @@ function saveEditedSession(){
   });
   saveData(data);invalidateHoy();closeEditPage();
   showToast('✅ Sesión actualizada','success');
+  renderHistorial();
+}
+function openAddSessionPage(dateStr){
+  const date=new Date(dateStr+'T12:00:00'),dow=date.getDay(),plan=PLAN[dow];
+  if(!plan||plan.type==='rest'){showToast('Día de descanso, sin plan de ejercicios','');return;}
+  editingSessionIdx=null;editingNewSession={dateStr,dow};
+  let html=`<div style="position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid #222;padding:14px 16px;display:flex;align-items:center;gap:12px"><button onclick="closeEditPage()" style="background:var(--bg2);border:none;color:var(--text);padding:8px 14px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0">← Volver</button><div style="min-width:0"><div style="font-size:15px;font-weight:800">${plan.label}</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(dateStr)} · nueva sesión</div></div></div><div style="padding:14px 16px 16px">`;
+  plan.exercises.forEach((ex,exIdx)=>{html+=renderNewExBlock(ex,exIdx);});
+  html+=`</div><div style="padding:0 16px 32px"><button onclick="saveNewSession()" style="width:100%;background:var(--accent);border:none;color:#000;padding:16px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer">💾 Guardar sesión</button></div>`;
+  document.getElementById('editSessionContent').innerHTML=html;
+  document.getElementById('pageEditSession').style.display='block';
+}
+function renderNewExBlock(ex,exIdx){
+  const isWeightEx=(ex.unit==='kg'||ex.unit==='kg+')&&ex.type!=='core'&&ex.type!=='cardio'&&ex.type!=='movilidad'&&ex.type!=='isometrico';
+  let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div><div class="ex-prescription">${ex.sets} series · ${ex.reps} reps</div><table class="sets-table"><tr><th style="width:28px">#</th>`;
+  if(isWeightEx){html+=`<th>KG</th><th>REPS</th>`;}
+  else{html+=`<th>${(ex.unit||'VALOR').toUpperCase()}</th>`;}
+  html+=`</tr>`;
+  for(let s=0;s<ex.sets;s++){
+    if(isWeightEx){
+      const lastSets=getLastExerciseValues(ex.name);
+      const ls=lastSets&&lastSets[s]?lastSets[s]:null;
+      html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="edit_kg_${exIdx}_${s}" placeholder="${ls&&ls.kg?ls.kg:'kg'}" step="2.5" min="0"></td><td><input type="number" class="set-input" id="edit_reps_${exIdx}_${s}" placeholder="${ls&&ls.reps?ls.reps:'reps'}" step="1" min="0"></td></tr>`;
+    }else{
+      html+=`<tr><td class="set-num">${s+1}</td><td><input type="number" class="set-input" id="edit_val_${exIdx}_${s}" placeholder="${ex.unit||'val'}" step="${ex.unit==='kg'||ex.unit==='kg+'?'2.5':'1'}" min="0"></td></tr>`;
+    }
+  }
+  return html+`</table></div>`;
+}
+function saveNewSession(){
+  if(!editingNewSession)return;
+  const{dateStr,dow}=editingNewSession,plan=PLAN[dow];
+  const now=new Date(),timeStr=now.toTimeString().slice(0,5);
+  const exercises=plan.exercises.map((ex,exIdx)=>{
+    const isWeightEx=(ex.unit==='kg'||ex.unit==='kg+')&&ex.type!=='core'&&ex.type!=='cardio'&&ex.type!=='movilidad'&&ex.type!=='isometrico';
+    const sets=[];
+    for(let s=0;s<ex.sets;s++){
+      if(isWeightEx){
+        const kg=parseFloat(document.getElementById(`edit_kg_${exIdx}_${s}`)?.value)||0;
+        const reps=parseFloat(document.getElementById(`edit_reps_${exIdx}_${s}`)?.value)||0;
+        sets.push({kg,reps,done:kg>0||reps>0,unit:ex.unit});
+      }else{
+        const value=parseFloat(document.getElementById(`edit_val_${exIdx}_${s}`)?.value)||0;
+        sets.push({value,done:value>0,unit:ex.unit});
+      }
+    }
+    return{name:ex.name,type:ex.type,unit:ex.unit,sets};
+  });
+  const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
+  const data=getData();
+  data.sessions.push(session);
+  data.sessions.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+  saveData(data);invalidateHoy();
+  editingNewSession=null;
+  closeEditPage();
+  selectedCalDate=dateStr;
+  showToast('✅ Sesión añadida','success');
   renderHistorial();
 }
 function renderProgreso(){
