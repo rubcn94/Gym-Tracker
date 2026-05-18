@@ -1475,8 +1475,24 @@ try{
   }
 }catch(e){}
 const savedPage=localStorage.getItem('gymtracker_currentPage')||'Hoy';
+migrateSessionDows();
 goPage(savedPage);
 initBackupDir();
+
+function migrateSessionDows(){
+  if(localStorage.getItem('gymtracker_dow_migrated_v3'))return;
+  // Construir mapa label→dow del plan por defecto actual
+  const labelToDow={};
+  Object.entries(DEFAULT_PLAN).forEach(([dow,plan])=>{if(plan.label)labelToDow[plan.label]=parseInt(dow);});
+  const data=getData();
+  let changed=false;
+  data.sessions.forEach(s=>{
+    const newDow=labelToDow[s.label];
+    if(newDow!==undefined&&newDow!==s.dow){s.dow=newDow;changed=true;}
+  });
+  if(changed){saveData(data,true);invalidateHoy();}
+  localStorage.setItem('gymtracker_dow_migrated_v3','1');
+}
 
 // Swipe para cambiar de pestaña
 (function(){
