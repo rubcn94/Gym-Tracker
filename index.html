@@ -271,6 +271,57 @@ const DEFAULT_PLAN = {
   },
   "2": {
     "name": "Martes",
+    "type": "cardio",
+    "label": "Cardio + Isométricos + Movilidad",
+    "duration": 70,
+    "color": "#5ac8fa",
+    "warmup": "3 min trote suave + movilidad general articular",
+    "exercises": [
+      {
+        "name": "HIIT en bici",
+        "type": "cardio",
+        "sets": 8,
+        "reps": "30s trabajo / 1min descanso",
+        "rest": 0,
+        "unit": "min",
+        "hasKm": true
+      },
+      {
+        "name": "Dead Hang",
+        "type": "isometrico",
+        "sets": 3,
+        "reps": "20-40 seg",
+        "rest": 90,
+        "unit": "seg"
+      },
+      {
+        "name": "Pike Push-up ISO",
+        "type": "isometrico",
+        "sets": 3,
+        "reps": "15-30",
+        "rest": 90,
+        "unit": "reps"
+      },
+      {
+        "name": "Plancha lateral",
+        "type": "core",
+        "sets": 3,
+        "reps": "seg por lado",
+        "rest": 45,
+        "unit": "seg"
+      },
+      {
+        "name": "Hollow hold",
+        "type": "core",
+        "sets": 3,
+        "reps": "seg",
+        "rest": 45,
+        "unit": "seg"
+      }
+    ]
+  },
+  "3": {
+    "name": "Miércoles",
     "type": "workout",
     "label": "Pecho + Tríceps",
     "duration": 50,
@@ -311,8 +362,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "3": {
-    "name": "Miércoles",
+  "4": {
+    "name": "Jueves",
     "type": "workout",
     "label": "Hombros + Core",
     "duration": 50,
@@ -369,8 +420,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "4": {
-    "name": "Jueves",
+  "5": {
+    "name": "Viernes",
     "type": "workout",
     "label": "Piernas",
     "duration": 60,
@@ -427,8 +478,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "5": {
-    "name": "Viernes",
+  "6": {
+    "name": "Sábado",
     "type": "workout",
     "label": "Full Body Fuerza",
     "duration": 55,
@@ -482,57 +533,6 @@ const DEFAULT_PLAN = {
         "reps": "10",
         "rest": 90,
         "unit": "kg"
-      }
-    ]
-  },
-  "6": {
-    "name": "Sábado",
-    "type": "cardio",
-    "label": "Cardio + Isométricos + Movilidad",
-    "duration": 70,
-    "color": "#5ac8fa",
-    "warmup": "3 min trote suave + movilidad general articular",
-    "exercises": [
-      {
-        "name": "HIIT en bici",
-        "type": "cardio",
-        "sets": 8,
-        "reps": "30s trabajo / 1min descanso",
-        "rest": 0,
-        "unit": "min",
-        "hasKm": true
-      },
-      {
-        "name": "Dead Hang",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "20-40 seg",
-        "rest": 90,
-        "unit": "seg"
-      },
-      {
-        "name": "Pike Push-up ISO",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "15-30",
-        "rest": 90,
-        "unit": "reps"
-      },
-      {
-        "name": "Plancha lateral",
-        "type": "core",
-        "sets": 3,
-        "reps": "seg por lado",
-        "rest": 45,
-        "unit": "seg"
-      },
-      {
-        "name": "Hollow hold",
-        "type": "core",
-        "sets": 3,
-        "reps": "seg",
-        "rest": 45,
-        "unit": "seg"
       }
     ]
   }
