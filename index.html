@@ -215,12 +215,6 @@
 const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
-    "type": "rest",
-    "label": "Descanso Total",
-    "color": "#555"
-  },
-  "1": {
-    "name": "Lunes",
     "type": "workout",
     "label": "Espalda + Bíceps",
     "duration": 55,
@@ -268,6 +262,12 @@ const DEFAULT_PLAN = {
         "unit": "kg"
       }
     ]
+  },
+  "1": {
+    "name": "Lunes",
+    "type": "rest",
+    "label": "Descanso Total",
+    "color": "#555"
   },
   "2": {
     "name": "Martes",
@@ -1097,7 +1097,10 @@ function buildCalendarHTML(data){
     if(selPlan&&selPlan.type==='workout'){
       html+=`<button onclick="openAddSessionPage('${selectedCalDate}')" style="width:100%;margin-top:8px;background:var(--bg2);border:1px dashed #444;color:var(--text2);padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer">➕ Añadir sesión este día</button>`;
     }else{
-      html+=`<div style="text-align:center;padding:20px;color:#444;font-size:14px">😴 Día de descanso</div>`;
+      html+=`<div style="margin-top:8px"><div style="text-align:center;padding:12px;color:#555;font-size:13px">😴 Día de descanso — ¿entrenaste igualmente?</div>`;
+      html+=`<div style="display:flex;flex-wrap:wrap;gap:8px;padding:0 4px 8px">`;
+      Object.entries(PLAN).forEach(([d,p])=>{if(p.type==='workout')html+=`<button onclick="openAddSessionPage('${selectedCalDate}',${d})" style="flex:1;min-width:calc(50% - 4px);background:${p.color}20;border:1px solid ${p.color}40;color:#fff;padding:10px 8px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">${p.label}</button>`;});
+      html+=`</div></div>`;
     }
     html+=`</div>`;
   }
@@ -1218,9 +1221,11 @@ function saveEditedSession(){
   showToast('✅ Sesión actualizada','success');
   renderHistorial();
 }
-function openAddSessionPage(dateStr){
-  const date=new Date(dateStr+'T12:00:00'),dow=date.getDay(),plan=PLAN[dow];
-  if(!plan||plan.type==='rest'){showToast('Día de descanso, sin plan de ejercicios','');return;}
+function openAddSessionPage(dateStr,dowOverride){
+  const date=new Date(dateStr+'T12:00:00');
+  const dow=dowOverride!==undefined?parseInt(dowOverride):date.getDay();
+  const plan=PLAN[dow];
+  if(!plan||plan.type==='rest'){showToast('Sin plan de ejercicios para ese día','');return;}
   editingSessionIdx=null;editingNewSession={dateStr,dow};
   let html=`<div style="position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid #222;padding:14px 16px;display:flex;align-items:center;gap:12px"><button onclick="closeEditPage()" style="background:var(--bg2);border:none;color:var(--text);padding:8px 14px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;flex-shrink:0">← Volver</button><div style="min-width:0"><div style="font-size:15px;font-weight:800">${plan.label}</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(dateStr)} · nueva sesión</div></div></div><div style="padding:14px 16px 16px">`;
   plan.exercises.forEach((ex,exIdx)=>{html+=renderNewExBlock(ex,exIdx);});
