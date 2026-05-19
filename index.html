@@ -540,7 +540,20 @@ const DEFAULT_PLAN = {
 let PLAN = (() => {
   try {
     const p = localStorage.getItem('gymtracker_plan');
-    return p ? JSON.parse(p) : DEFAULT_PLAN;
+    if (!p) return DEFAULT_PLAN;
+    const stored = JSON.parse(p);
+    // Sync rest values: if exercise name matches DEFAULT_PLAN, keep default rest times
+    Object.entries(DEFAULT_PLAN).forEach(([dow, defDay]) => {
+      const storedDay = stored[dow];
+      if (!storedDay || !storedDay.exercises) return;
+      defDay.exercises.forEach((defEx, i) => {
+        const storedEx = storedDay.exercises[i];
+        if (storedEx && storedEx.name === defEx.name && storedEx.rest !== defEx.rest) {
+          storedEx.rest = defEx.rest;
+        }
+      });
+    });
+    return stored;
   } catch(e) { return DEFAULT_PLAN; }
 })();
 const PHASES = [
@@ -804,7 +817,7 @@ function renderExerciseInput(ex,idx,dow,small){
     html+=`<div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><label style="font-size:13px;font-weight:600;white-space:nowrap;">KM totales:</label><input type="number" class="set-input" id="inp_km_${dow}_${idx}" placeholder="km" value="${lastKm}" min="0" step="0.1" style="flex:1;max-width:100px" oninput="saveHIITKm(${dow},${idx},this.value)"></div>`;
   }
 
-  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:5px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;min-width:80px" onclick="startRest(${ex.rest},${dow},${idx});event.stopPropagation();">⏱ Iniciar</button></div>`;}
+  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="startRest(${ex.rest},${dow},${idx});event.stopPropagation();">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
 }
 function onSetChange(dow,exIdx,setIdx){
@@ -945,10 +958,13 @@ function updateRestTimerUI(){
   // Actualizar widget flotante (visible en todas las pestañas)
   const ft=document.getElementById('floatingTimer');
   const fl=document.getElementById('floatingTimerLabel');
+  const fsub=document.getElementById('floatingTimerSub');
   if(ft&&fl){
     if(running&&rem>0){
       ft.classList.add('active');document.body.classList.add('has-timer');
       fl.textContent=`⏳ ${formatRest(rem)}`;
+      const exName=restTimerState.exName||(PLAN[dow]&&PLAN[dow].exercises[exIdx]?PLAN[dow].exercises[exIdx].name:'');
+      if(fsub)fsub.textContent=exName||'Descanso activo';
     }else{
       ft.classList.remove('active');document.body.classList.remove('has-timer');
     }
@@ -957,17 +973,18 @@ function updateRestTimerUI(){
   const lbl=document.getElementById(`timerLabel_${dow}_${exIdx}`);
   const btn=document.getElementById(`timerBtn_${dow}_${exIdx}`);
   if(!lbl||!btn)return;
+  btn.style.padding='10px 16px';btn.style.minHeight='44px';
   if(done){
     lbl.innerHTML=`<b style="color:var(--green)">✅ ¡Listo!</b>`;
-    btn.textContent='⏱ Iniciar';btn.style.background='var(--accent)';
+    btn.textContent='⏱ Iniciar';btn.style.background='var(--accent)';btn.style.color='#000';
     btn.onclick=(e)=>{e.stopPropagation();startRest(secs,dow,exIdx);};
   }else if(running){
     lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(rem)}</b>`;
-    btn.textContent='⏹ Parar';btn.style.background='var(--red)';
+    btn.textContent='⏹ Parar';btn.style.background='var(--red)';btn.style.color='#fff';
     btn.onclick=(e)=>{e.stopPropagation();stopRest();};
   }else{
     lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(rem)}</b>`;
-    btn.textContent='▶ Continuar';btn.style.background='var(--accent)';
+    btn.textContent='▶ Continuar';btn.style.background='var(--accent)';btn.style.color='#000';
     btn.onclick=(e)=>{e.stopPropagation();resumeRest();};
   }
 }
