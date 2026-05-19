@@ -216,6 +216,70 @@ const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
     "type": "workout",
+    "label": "Full Body Fuerza",
+    "duration": 55,
+    "color": "#bf5af2",
+    "warmup": "5 min cardio suave + 1 serie de cada compuesto del día al 40% y al 60%",
+    "exercises": [
+      {
+        "name": "Extensión de cuádriceps",
+        "type": "fuerza",
+        "sets": 4,
+        "reps": "6",
+        "rest": 120,
+        "unit": "kg"
+      },
+      {
+        "name": "Press pecho máquina (pesado)",
+        "type": "fuerza",
+        "sets": 5,
+        "reps": "3",
+        "rest": 180,
+        "unit": "kg"
+      },
+      {
+        "name": "Remo en máquina (pesado)",
+        "type": "fuerza",
+        "sets": 5,
+        "reps": "3",
+        "rest": 180,
+        "unit": "kg"
+      },
+      {
+        "name": "Peso muerto rumano",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "5",
+        "rest": 150,
+        "unit": "kg"
+      },
+      {
+        "name": "Superserie: Curl bíceps en polea",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "10",
+        "rest": 0,
+        "unit": "kg"
+      },
+      {
+        "name": "Superserie: Extensión tríceps en polea",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "10",
+        "rest": 90,
+        "unit": "kg"
+      }
+    ]
+  },
+  "1": {
+    "name": "Lunes",
+    "type": "rest",
+    "label": "Descanso Total",
+    "color": "#555"
+  },
+  "2": {
+    "name": "Martes",
+    "type": "workout",
     "label": "Espalda + Bíceps",
     "duration": 55,
     "color": "#1e90ff",
@@ -263,14 +327,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "1": {
-    "name": "Lunes",
-    "type": "rest",
-    "label": "Descanso Total",
-    "color": "#555"
-  },
-  "2": {
-    "name": "Martes",
+  "3": {
+    "name": "Miércoles",
     "type": "cardio",
     "label": "Cardio + Isométricos + Movilidad",
     "duration": 70,
@@ -320,8 +378,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "3": {
-    "name": "Miércoles",
+  "4": {
+    "name": "Jueves",
     "type": "workout",
     "label": "Pecho + Tríceps",
     "duration": 50,
@@ -362,8 +420,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "4": {
-    "name": "Jueves",
+  "5": {
+    "name": "Viernes",
     "type": "workout",
     "label": "Hombros + Core",
     "duration": 50,
@@ -420,8 +478,8 @@ const DEFAULT_PLAN = {
       }
     ]
   },
-  "5": {
-    "name": "Viernes",
+  "6": {
+    "name": "Sábado",
     "type": "workout",
     "label": "Piernas",
     "duration": 60,
@@ -474,64 +532,6 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "15-20",
         "rest": 60,
-        "unit": "kg"
-      }
-    ]
-  },
-  "6": {
-    "name": "Sábado",
-    "type": "workout",
-    "label": "Full Body Fuerza",
-    "duration": 55,
-    "color": "#bf5af2",
-    "warmup": "5 min cardio suave + 1 serie de cada compuesto del día al 40% y al 60%",
-    "exercises": [
-      {
-        "name": "Extensión de cuádriceps",
-        "type": "fuerza",
-        "sets": 4,
-        "reps": "6",
-        "rest": 120,
-        "unit": "kg"
-      },
-      {
-        "name": "Press pecho máquina (pesado)",
-        "type": "fuerza",
-        "sets": 5,
-        "reps": "3",
-        "rest": 180,
-        "unit": "kg"
-      },
-      {
-        "name": "Remo en máquina (pesado)",
-        "type": "fuerza",
-        "sets": 5,
-        "reps": "3",
-        "rest": 180,
-        "unit": "kg"
-      },
-      {
-        "name": "Peso muerto rumano",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "5",
-        "rest": 150,
-        "unit": "kg"
-      },
-      {
-        "name": "Superserie: Curl bíceps en polea",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "10",
-        "rest": 0,
-        "unit": "kg"
-      },
-      {
-        "name": "Superserie: Extensión tríceps en polea",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "10",
-        "rest": 90,
         "unit": "kg"
       }
     ]
@@ -1480,7 +1480,7 @@ goPage(savedPage);
 initBackupDir();
 
 function migrateSessionDows(){
-  if(localStorage.getItem('gymtracker_dow_migrated_v3'))return;
+  if(localStorage.getItem('gymtracker_dow_migrated_v4'))return;
   // Construir mapa label→dow del plan por defecto actual
   const labelToDow={};
   Object.entries(DEFAULT_PLAN).forEach(([dow,plan])=>{if(plan.label)labelToDow[plan.label]=parseInt(dow);});
@@ -1491,7 +1491,7 @@ function migrateSessionDows(){
     if(newDow!==undefined&&newDow!==s.dow){s.dow=newDow;changed=true;}
   });
   if(changed){saveData(data,true);invalidateHoy();}
-  localStorage.setItem('gymtracker_dow_migrated_v3','1');
+  localStorage.setItem('gymtracker_dow_migrated_v4','1');
 }
 
 // Swipe para cambiar de pestaña
