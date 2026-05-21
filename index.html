@@ -766,8 +766,8 @@ function renderHoy(dayOverride) {
 }
 function getLastExerciseValues(exName){
   const data=getData();
-  for(const session of data.sessions){
-    const ex=session.exercises.find(e=>e.name===exName);
+  for(let i=data.sessions.length-1;i>=0;i--){
+    const ex=data.sessions[i].exercises.find(e=>e.name===exName);
     if(ex)return ex.sets;
   }
   return null;
