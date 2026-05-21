@@ -1198,7 +1198,7 @@ function openEditPage(idx){
 }
 function renderEditExBlock(ex,exIdx,dow){
   const hasKgReps=ex.sets[0]&&ex.sets[0].kg!==undefined;
-  const planEx=PLAN[dow]&&PLAN[dow].exercises.find(e=>e.name===ex.name);
+  const planEx=(PLAN[dow]&&PLAN[dow].exercises.find(e=>e.name===ex.name))||(PLAN[dow]&&PLAN[dow].exercises[exIdx]);
   const restSecs=planEx?planEx.rest:0;
   const prescription=planEx?`${planEx.sets} series · ${planEx.reps} reps${restSecs>0?' · '+formatRest(restSecs)+' descanso':''}`:null;
   let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div>`;
