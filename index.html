@@ -729,10 +729,10 @@ function renderHoy(dayOverride) {
   if(dayOverride !== undefined) {
     // Usuario seleccionó un día específico, guardarlo para mantener la vista
     todayDow = dayOverride;
-    localStorage.setItem('gymtracker_selectedDay', dayOverride);
+    sessionStorage.setItem('gymtracker_selectedDay', dayOverride);
   } else {
     // Restaurar el día guardado si existe, sino usar hoy
-    const savedDay = localStorage.getItem('gymtracker_selectedDay');
+    const savedDay = sessionStorage.getItem('gymtracker_selectedDay');
     todayDow = savedDay !== null ? parseInt(savedDay) : now.getDay();
   }
 
@@ -741,7 +741,7 @@ function renderHoy(dayOverride) {
   const page=document.getElementById('pageHoy'); let html='';
   html+='<div class="day-selector">';
   for(let i=1;i<=6;i++){const d=PLAN[i];html+=`<div class="day-chip ${i===todayDow?'active':''}" onclick="renderHoy(${i})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label.split(' ')[0]}</small></div>`;}
-  html+=`<div class="day-chip ${0===todayDow?'active rest':'rest'}" onclick="renderHoy(0)">Dom<br><small style="font-size:10px">Descanso</small></div></div>`;
+  const d0=PLAN[0];html+=`<div class="day-chip ${0===todayDow?'active':''}${d0.type==='rest'?' rest':''}" onclick="renderHoy(0)">${d0.name}<br><small style="font-size:10px;opacity:0.8">${d0.label.split(' ')[0]}</small></div></div>`;
   if(plan.type==='rest'){html+=`<div class="card" style="text-align:center;padding:40px 20px"><div style="font-size:48px;margin-bottom:12px">😴</div><div style="font-size:20px;font-weight:800;margin-bottom:8px">Descanso Total</div><div style="font-size:14px;color:var(--text2)">El descanso también es entrenamiento.<br>Recupera y vuelve mañana más fuerte.</div></div>`;page.innerHTML=html;return;}
   html+=`<div class="card" style="border-left:3px solid ${plan.color}"><div class="day-badge" style="background:${plan.color}">${plan.name}</div><div class="workout-title">${plan.label}</div><div class="workout-meta">⏱ ~${plan.duration} min &nbsp;·&nbsp; ${plan.exercises.length} ejercicios</div></div>`;
   const phase=getCurrentPhase();
