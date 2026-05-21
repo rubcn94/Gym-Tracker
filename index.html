@@ -542,15 +542,13 @@ let PLAN = (() => {
     const p = localStorage.getItem('gymtracker_plan');
     if (!p) return DEFAULT_PLAN;
     const stored = JSON.parse(p);
-    // Sync rest values: if exercise name matches DEFAULT_PLAN, keep default rest times
+    // Sync rest values by name: always inherit rest time from DEFAULT_PLAN
     Object.entries(DEFAULT_PLAN).forEach(([dow, defDay]) => {
       const storedDay = stored[dow];
       if (!storedDay || !storedDay.exercises) return;
-      defDay.exercises.forEach((defEx, i) => {
-        const storedEx = storedDay.exercises[i];
-        if (storedEx && storedEx.name === defEx.name && storedEx.rest !== defEx.rest) {
-          storedEx.rest = defEx.rest;
-        }
+      defDay.exercises.forEach(defEx => {
+        const storedEx = storedDay.exercises.find(e => e.name === defEx.name);
+        if (storedEx) storedEx.rest = defEx.rest;
       });
     });
     return stored;
