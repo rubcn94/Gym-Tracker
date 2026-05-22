@@ -815,7 +815,7 @@ function renderExerciseInput(ex,idx,dow,small){
     html+=`<div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><label style="font-size:13px;font-weight:600;white-space:nowrap;">KM totales:</label><input type="number" class="set-input" id="inp_km_${dow}_${idx}" placeholder="km" value="${lastKm}" min="0" step="0.1" style="flex:1;max-width:100px" oninput="saveHIITKm(${dow},${idx},this.value)"></div>`;
   }
 
-  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="startRest(${ex.rest},${dow},${idx});event.stopPropagation();">⏱ Iniciar</button></div>`;}
+  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${ex.rest},${dow},${idx},event)">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
 }
 function onSetChange(dow,exIdx,setIdx){
@@ -931,12 +931,10 @@ function restRAF(){
 }
 function startRest(secs,dow,exIdx){
   if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
-  // Resetear botón del timer anterior si es un ejercicio diferente
+  // Resetear label del timer anterior si es un ejercicio diferente
   if(restTimerState&&(restTimerState.dow!==dow||restTimerState.exIdx!==exIdx)){
     const prevLbl=document.getElementById(`timerLabel_${restTimerState.dow}_${restTimerState.exIdx}`)||document.getElementById(`timerLabel_edit_${restTimerState.exIdx}`);
-    const prevBtn=document.getElementById(`timerBtn_${restTimerState.dow}_${restTimerState.exIdx}`)||document.getElementById(`timerBtn_edit_${restTimerState.exIdx}`);
     if(prevLbl)prevLbl.innerHTML=`Descanso: <b>${formatRest(restTimerState.secs)}</b>`;
-    if(prevBtn){prevBtn.textContent='⏱ Iniciar';prevBtn.style.background='var(--accent)';prevBtn.style.color='#000';}
   }
   const exName=PLAN[dow]&&PLAN[dow].exercises[exIdx]?PLAN[dow].exercises[exIdx].name:'';
   restTimerState={secs,dow,exIdx,exName,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
@@ -956,11 +954,19 @@ function resumeRest(){
   saveRestState();updateRestTimerUI();
   restRafId=requestAnimationFrame(restRAF);
 }
+function handleTimerBtn(secs,dow,exIdx,e){
+  if(e)e.stopPropagation();
+  const st=restTimerState;
+  const isThis=st&&st.dow===dow&&st.exIdx===exIdx;
+  if(isThis&&st.running)stopRest();
+  else if(isThis&&!st.running&&!st.done)resumeRest();
+  else startRest(secs,dow,exIdx);
+}
 function updateRestTimerUI(){
   if(!restTimerState)return;
   const{secs,dow,exIdx,running,done}=restTimerState;
   const rem=restRemaining();
-  // Actualizar widget flotante (visible en todas las pestañas)
+  // Widget flotante
   const ft=document.getElementById('floatingTimer');
   const fl=document.getElementById('floatingTimerLabel');
   const fsub=document.getElementById('floatingTimerSub');
@@ -974,23 +980,19 @@ function updateRestTimerUI(){
       ft.classList.remove('active');document.body.classList.remove('has-timer');
     }
   }
-  // Actualizar botones del ejercicio (Hoy o panel edición)
+  // Botón del ejercicio activo (solo texto/estilo, nunca onclick)
   const lbl=document.getElementById(`timerLabel_${dow}_${exIdx}`)||document.getElementById(`timerLabel_edit_${exIdx}`);
   const btn=document.getElementById(`timerBtn_${dow}_${exIdx}`)||document.getElementById(`timerBtn_edit_${exIdx}`);
   if(!lbl||!btn)return;
-  btn.style.padding='10px 16px';btn.style.minHeight='44px';
   if(done){
     lbl.innerHTML=`<b style="color:var(--green)">✅ ¡Listo!</b>`;
     btn.textContent='⏱ Iniciar';btn.style.background='var(--accent)';btn.style.color='#000';
-    btn.onclick=(e)=>{e.stopPropagation();startRest(secs,dow,exIdx);};
   }else if(running){
     lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(rem)}</b>`;
     btn.textContent='⏹ Parar';btn.style.background='var(--red)';btn.style.color='#fff';
-    btn.onclick=(e)=>{e.stopPropagation();stopRest();};
   }else{
     lbl.innerHTML=`⏳ <b style="color:var(--accent);font-size:16px">${formatRest(rem)}</b>`;
     btn.textContent='▶ Continuar';btn.style.background='var(--accent)';btn.style.color='#000';
-    btn.onclick=(e)=>{e.stopPropagation();resumeRest();};
   }
 }
 // Al volver del background, recalcula y actualiza inmediatamente
@@ -1223,7 +1225,7 @@ function renderEditExBlock(ex,exIdx,dow){
     }
   });
   html+=`</table>`;
-  if(restSecs>0&&dow!==undefined){html+=`<div class="rest-timer" id="restbox_edit_${exIdx}"><span id="timerLabel_edit_${exIdx}">Descanso: <b>${formatRest(restSecs)}</b></span><button id="timerBtn_edit_${exIdx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="startRest(${restSecs},${dow},${exIdx});event.stopPropagation();">⏱ Iniciar</button></div>`;}
+  if(restSecs>0&&dow!==undefined){html+=`<div class="rest-timer" id="restbox_edit_${exIdx}"><span id="timerLabel_edit_${exIdx}">Descanso: <b>${formatRest(restSecs)}</b></span><button id="timerBtn_edit_${exIdx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${restSecs},${dow},${exIdx},event)">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
 }
 function closeEditPage(){
