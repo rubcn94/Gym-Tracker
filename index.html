@@ -931,10 +931,12 @@ function restRAF(){
 }
 function startRest(secs,dow,exIdx){
   if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
-  // Resetear label del timer anterior si es un ejercicio diferente
+  // Resetear botón y label del timer anterior si es un ejercicio diferente
   if(restTimerState&&(restTimerState.dow!==dow||restTimerState.exIdx!==exIdx)){
     const prevLbl=document.getElementById(`timerLabel_${restTimerState.dow}_${restTimerState.exIdx}`)||document.getElementById(`timerLabel_edit_${restTimerState.exIdx}`);
+    const prevBtn=document.getElementById(`timerBtn_${restTimerState.dow}_${restTimerState.exIdx}`)||document.getElementById(`timerBtn_edit_${restTimerState.exIdx}`);
     if(prevLbl)prevLbl.innerHTML=`Descanso: <b>${formatRest(restTimerState.secs)}</b>`;
+    if(prevBtn){prevBtn.textContent='⏱ Iniciar';prevBtn.style.background='var(--accent)';prevBtn.style.color='#000';}
   }
   const exName=PLAN[dow]&&PLAN[dow].exercises[exIdx]?PLAN[dow].exercises[exIdx].name:'';
   restTimerState={secs,dow,exIdx,exName,endTime:Date.now()+secs*1000,pausedRemaining:secs,running:true,done:false};
