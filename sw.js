@@ -1,5 +1,5 @@
 // Service Worker para GymTracker PWA
-const CACHE_NAME = 'gymtracker-v5';
+const CACHE_NAME = 'gymtracker-v6';
 const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
@@ -24,25 +24,38 @@ self.addEventListener('activate', event => {
 });
 
 // Timer de notificación en background (sobrevive pantalla bloqueada)
+// event.waitUntil() mantiene el SW vivo hasta que se muestre la notificación
 let _notifTimer = null;
+let _notifReject = null;
 self.addEventListener('message', event => {
   if (event.data.type === 'SCHEDULE_NOTIFICATION') {
+    // Cancelar timer anterior si existe
     if (_notifTimer) { clearTimeout(_notifTimer); _notifTimer = null; }
+    if (_notifReject) { _notifReject(); _notifReject = null; }
     const delay = Math.max(0, event.data.endTime - Date.now());
-    _notifTimer = setTimeout(() => {
-      _notifTimer = null;
-      self.registration.showNotification('⏰ ¡Descanso terminado!', {
-        body: event.data.exName ? `${event.data.exName} — ¡Siguiente serie!` : '¡Es hora de entrenar!',
-        icon: './icon-192.png',
-        badge: './icon-192.png',
-        vibrate: [300, 100, 300, 100, 500],
-        tag: 'rest-timer',
-        renotify: true,
-        silent: false
-      });
-    }, delay);
+    const exName = event.data.exName;
+    // waitUntil impide que el OS mate el SW hasta que la promesa resuelva
+    event.waitUntil(
+      new Promise((resolve, reject) => {
+        _notifReject = reject;
+        _notifTimer = setTimeout(() => {
+          _notifTimer = null;
+          _notifReject = null;
+          resolve(self.registration.showNotification('⏰ ¡Descanso terminado!', {
+            body: exName ? `${exName} — ¡Siguiente serie!` : '¡Es hora de entrenar!',
+            icon: './icon-192.png',
+            badge: './icon-192.png',
+            vibrate: [300, 100, 300, 100, 500],
+            tag: 'rest-timer',
+            renotify: true,
+            silent: false
+          }));
+        }, delay);
+      })
+    );
   } else if (event.data.type === 'CANCEL_NOTIFICATION') {
     if (_notifTimer) { clearTimeout(_notifTimer); _notifTimer = null; }
+    if (_notifReject) { _notifReject(); _notifReject = null; }
   }
 });
 
