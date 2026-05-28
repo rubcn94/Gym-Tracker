@@ -1,5 +1,5 @@
 // Service Worker para GymTracker PWA
-const CACHE_NAME = 'gymtracker-v4';
+const CACHE_NAME = 'gymtracker-v5';
 const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
@@ -7,7 +7,6 @@ const STATIC_ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js'
 ];
 
-// Instalación: cachear solo assets estáticos (no index.html)
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
@@ -15,7 +14,6 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activación: limpiar cachés antiguas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames =>
@@ -23,6 +21,40 @@ self.addEventListener('activate', event => {
     )
   );
   self.clients.claim();
+});
+
+// Timer de notificación en background (sobrevive pantalla bloqueada)
+let _notifTimer = null;
+self.addEventListener('message', event => {
+  if (event.data.type === 'SCHEDULE_NOTIFICATION') {
+    if (_notifTimer) { clearTimeout(_notifTimer); _notifTimer = null; }
+    const delay = Math.max(0, event.data.endTime - Date.now());
+    _notifTimer = setTimeout(() => {
+      _notifTimer = null;
+      self.registration.showNotification('⏰ ¡Descanso terminado!', {
+        body: event.data.exName ? `${event.data.exName} — ¡Siguiente serie!` : '¡Es hora de entrenar!',
+        icon: './icon-192.png',
+        badge: './icon-192.png',
+        vibrate: [300, 100, 300, 100, 500],
+        tag: 'rest-timer',
+        renotify: true,
+        silent: false
+      });
+    }, delay);
+  } else if (event.data.type === 'CANCEL_NOTIFICATION') {
+    if (_notifTimer) { clearTimeout(_notifTimer); _notifTimer = null; }
+  }
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const client = list.find(c => c.url.includes('index.html') || c.url.endsWith('/'));
+      if (client) { client.focus(); return; }
+      clients.openWindow('./index.html');
+    })
+  );
 });
 
 self.addEventListener('fetch', event => {
@@ -33,8 +65,6 @@ self.addEventListener('fetch', event => {
                  url.pathname.endsWith('/');
 
   if (isHTML) {
-    // Network First para HTML: siempre descarga la versión más reciente
-    // Solo usa caché si no hay red (modo offline)
     event.respondWith(
       fetch(event.request)
         .then(response => {
@@ -45,7 +75,6 @@ self.addEventListener('fetch', event => {
         .catch(() => caches.match(event.request))
     );
   } else {
-    // Cache First para assets estáticos (iconos, Chart.js, etc.)
     event.respondWith(
       caches.match(event.request).then(response => {
         if (response) return response;
