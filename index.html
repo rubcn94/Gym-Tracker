@@ -955,7 +955,6 @@ function startRest(secs,dow,exIdx){
   const endTime=Date.now()+secs*1000;
   restTimerState={secs,dow,exIdx,exName,endTime,pausedRemaining:secs,running:true,done:false};
   restLastSec=-1;
-  swNotify(endTime, exName);
   saveRestState();updateRestTimerUI();
   restRafId=requestAnimationFrame(restRAF);
 }
@@ -1014,16 +1013,29 @@ function updateRestTimerUI(){
     btn.textContent='▶ Continuar';btn.style.background='var(--accent)';btn.style.color='#000';
   }
 }
-// Al volver del background, recalcula y actualiza inmediatamente
 document.addEventListener('visibilitychange',function(){
-  if(!document.hidden&&restTimerState&&restTimerState.running){
-    if(restRemaining()<=0){
-      if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
-      restTimerState.running=false;restTimerState.done=true;
-      showToast('⏰ ¡Descanso terminado!','success');playBeep();
-      if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+  if(document.hidden){
+    // Pantalla bloqueada/app en background: programar notificación en SW ahora
+    // (enviarlo aquí maximiza tiempo que el SW puede vivir)
+    if(restTimerState&&restTimerState.running&&restRemaining()>0){
+      swNotify(restTimerState.endTime,restTimerState.exName);
     }
-    updateRestTimerUI();
+  } else {
+    // Pantalla desbloqueada: el RAF retoma, cancelar notificación SW
+    swCancelNotify();
+    if(restTimerState&&restTimerState.running){
+      if(restRemaining()<=0){
+        if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
+        restTimerState.running=false;restTimerState.done=true;
+        saveRestState();
+        showToast('⏰ ¡Descanso terminado!','success');playBeep();
+        if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
+      }
+      updateRestTimerUI();
+      if(restTimerState.running&&!restRafId){
+        restLastSec=-1;restRafId=requestAnimationFrame(restRAF);
+      }
+    }
   }
 });
 let autoSaveTimer=null;
