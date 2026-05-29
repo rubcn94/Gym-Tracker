@@ -904,7 +904,7 @@ function saveHIITKm(dow,exIdx,value){
 }
 function playBeep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[0,0.25,0.5].forEach(delay=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='sine';osc.frequency.value=delay===0.5?1046:880;gain.gain.setValueAtTime(0.6,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+0.18);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.2);});}catch(e){}}
 let restTimerState=null; // {secs,dow,exIdx,endTime,pausedRemaining,running,done}
-let restRafId=null, restLastSec=-1, swNotifScheduled=false;
+let restRafId=null, restLastSec=-1, swNotifScheduled=false, _swNotifHideTimer=null;
 function restRemaining(){
   if(!restTimerState)return 0;
   if(!restTimerState.running)return restTimerState.pausedRemaining||0;
@@ -921,7 +921,9 @@ function restRAF(){
     if(rem<=0){
       restTimerState.running=false;restTimerState.done=true;
       saveRestState();updateRestTimerUI();
-      showToast('⏰ ¡Descanso terminado!','success');playBeep();
+      showToast('⏰ ¡Descanso terminado!','success');
+      if(!swNotifScheduled)playBeep();
+      swNotifScheduled=false;
       if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
       restRafId=null;return;
     }
@@ -1015,21 +1017,28 @@ function updateRestTimerUI(){
 }
 document.addEventListener('visibilitychange',function(){
   if(document.hidden){
-    if(restTimerState&&restTimerState.running&&restRemaining()>0){
-      swNotify(restTimerState.endTime,restTimerState.exName);
-      swNotifScheduled=true;
-    }
+    // Debounce 500ms: evita enviar al SW en cambios de app muy rápidos
+    _swNotifHideTimer=setTimeout(()=>{
+      if(document.hidden&&restTimerState&&restTimerState.running&&restRemaining()>0){
+        swNotify(restTimerState.endTime,restTimerState.exName);
+        swNotifScheduled=true;
+      }
+    },500);
   } else {
+    if(_swNotifHideTimer){clearTimeout(_swNotifHideTimer);_swNotifHideTimer=null;}
     const wasSwNotif=swNotifScheduled;
     swNotifScheduled=false;
     swCancelNotify();
+    // Cerrar notificaciones ya disparadas para evitar sonido tardío
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.ready.then(reg=>reg.getNotifications({tag:'rest-timer'}).then(ns=>ns.forEach(n=>n.close())));
+    }
     if(restTimerState&&restTimerState.running){
       if(restRemaining()<=0){
         if(restRafId){cancelAnimationFrame(restRafId);restRafId=null;}
         restTimerState.running=false;restTimerState.done=true;
         saveRestState();
         showToast('⏰ ¡Descanso terminado!','success');
-        // La notificación SW ya sonó — solo vibrar, no beep doble
         if(!wasSwNotif)playBeep();
         if(navigator.vibrate)navigator.vibrate([300,100,300,100,500]);
       }
