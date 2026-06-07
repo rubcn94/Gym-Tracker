@@ -764,11 +764,15 @@ function renderHoy(dayOverride) {
 }
 function getLastExerciseValues(exName){
   const data=getData();
-  for(let i=data.sessions.length-1;i>=0;i--){
-    const ex=data.sessions[i].exercises.find(e=>e.name===exName);
-    if(ex)return ex.sets;
-  }
-  return null;
+  let best=null;
+  data.sessions.forEach(session=>{
+    const ex=session.exercises.find(e=>e.name===exName);
+    if(!ex)return;
+    if(!best||session.date>best.date||(session.date===best.date&&session.time>best.time)){
+      best={date:session.date,time:session.time,sets:ex.sets};
+    }
+  });
+  return best?best.sets:null;
 }
 function renderExerciseInput(ex,idx,dow,small){
   const isWeightEx = ex.unit==='kg' || ex.unit==='kg+';
@@ -1082,6 +1086,7 @@ function doAutoSave(dow){
   const data=getData();
   const existingIdx=data.sessions.findIndex(s=>s.date===dateStr&&s.dow===dow);
   if(existingIdx>=0){data.sessions[existingIdx]=session;}else{data.sessions.unshift(session);}
+  data.sessions.sort((a,b)=>b.date.localeCompare(a.date)||b.time.localeCompare(a.time));
   const success = saveData(data, true); // true = silent (autoguardado)
   const badge=document.getElementById('autosaveBadge');
   if(badge && success){badge.classList.add('show');setTimeout(()=>badge.classList.remove('show'),2000);}
@@ -1114,6 +1119,7 @@ function saveSession(dow){
   const data=getData();
   const existingIdx=data.sessions.findIndex(s=>s.date===dateStr&&s.dow===dow);
   if(existingIdx>=0){data.sessions[existingIdx]=session;}else{data.sessions.unshift(session);}
+  data.sessions.sort((a,b)=>b.date.localeCompare(a.date)||b.time.localeCompare(a.time));
   saveData(data);clearTempSession();
   showToast('✅ Sesión guardada','success');setTimeout(()=>renderHoy(dow),600);
 }
@@ -1355,7 +1361,7 @@ function saveNewSession(){
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
   const data=getData();
   data.sessions.push(session);
-  data.sessions.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
+  data.sessions.sort((a,b)=>b.date.localeCompare(a.date)||b.time.localeCompare(a.time));
   saveData(data);invalidateHoy();
   editingNewSession=null;
   closeEditPage();
@@ -1381,7 +1387,7 @@ function renderProgreso(){
 function saveWeight(){const inp=document.getElementById('weightInput'),kg=parseFloat(inp.value);if(!kg||kg<30||kg>300){showToast('Introduce un peso válido');return;}const data=getData(),today=formatDate(new Date());data.weights=data.weights.filter(w=>w.date!==today);data.weights.push({date:today,kg});data.weights.sort((a,b)=>a.date.localeCompare(b.date));saveData(data);showToast(`⚖️ ${kg} kg guardado`,'success');renderProgreso();}
 function renderWeightChart(data){if(chartInstances.weightChart)chartInstances.weightChart.destroy();const ctx=document.getElementById('weightChart')?.getContext('2d');if(!ctx)return;const points=data.weights.slice(-20);chartInstances.weightChart=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.kg),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
 function selectProgressDay(dow){localStorage.setItem('gymtracker_progressDay',dow);renderProgreso();}
-function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).reverse();if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
+function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
 const AI_SYSTEM_PROMPT = `Eres un entrenador personal experto. Genera un plan de entrenamiento semanal en formato JSON exacto para una app de gimnasio.
 
 FORMATO OBLIGATORIO (devuelve SOLO el JSON, sin markdown, sin explicaciones):
