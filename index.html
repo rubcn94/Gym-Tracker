@@ -768,6 +768,9 @@ function getLastExerciseValues(exName){
   data.sessions.forEach(session=>{
     const ex=session.exercises.find(e=>e.name===exName);
     if(!ex)return;
+    // Ignorar sesiones "vacías" (borradores autoguardados sin datos reales)
+    const hasData=ex.sets.some(s=>s.done||(s.kg||s.value));
+    if(!hasData)return;
     if(!best||session.date>best.date||(session.date===best.date&&session.time>best.time)){
       best={date:session.date,time:session.time,sets:ex.sets};
     }
