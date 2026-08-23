@@ -273,9 +273,38 @@ const DEFAULT_PLAN = {
   },
   "1": {
     "name": "Lunes",
-    "type": "rest",
-    "label": "Descanso Total",
-    "color": "#555"
+    "type": "cardio",
+    "label": "Zona 2 + Movilidad",
+    "duration": 55,
+    "color": "#5ac8fa",
+    "warmup": "3 min bici muy suave + movilidad articular general (caderas, hombros, tobillo)",
+    "exercises": [
+      {
+        "name": "Bici zona 2",
+        "type": "cardio",
+        "sets": 1,
+        "reps": "40 min continuo (65-70% FC máx)",
+        "rest": 0,
+        "unit": "min",
+        "hasKm": true
+      },
+      {
+        "name": "Dead Hang",
+        "type": "isometrico",
+        "sets": 3,
+        "reps": "max seg",
+        "rest": 90,
+        "unit": "seg"
+      },
+      {
+        "name": "Hollow hold",
+        "type": "core",
+        "sets": 3,
+        "reps": "max seg",
+        "rest": 60,
+        "unit": "seg"
+      }
+    ]
   },
   "2": {
     "name": "Martes",
@@ -330,19 +359,43 @@ const DEFAULT_PLAN = {
   "3": {
     "name": "Miércoles",
     "type": "cardio",
-    "label": "Cardio + Isométricos + Movilidad",
-    "duration": 70,
+    "label": "Cardio Híbrido + CNS",
+    "duration": 75,
     "color": "#5ac8fa",
-    "warmup": "3 min trote suave + movilidad general articular",
+    "warmup": "3 min bici suave + movilidad articular general",
     "exercises": [
       {
-        "name": "HIIT en bici",
+        "name": "Zona 2 en bici",
         "type": "cardio",
-        "sets": 8,
-        "reps": "30s trabajo / 1min descanso",
+        "sets": 1,
+        "reps": "20 min continuo (65-70% FC máx)",
         "rest": 0,
         "unit": "min",
         "hasKm": true
+      },
+      {
+        "name": "HIIT en bici",
+        "type": "cardio",
+        "sets": 4,
+        "reps": "3 min intenso / 3 min recuperación",
+        "rest": 0,
+        "unit": "min"
+      },
+      {
+        "name": "Sentadilla con salto explosiva",
+        "type": "fuerza",
+        "sets": 3,
+        "reps": "5 (máx potencia, sin lastre)",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Combinaciones en saco",
+        "type": "cardio",
+        "sets": 3,
+        "reps": "2 min",
+        "rest": 90,
+        "unit": "min"
       },
       {
         "name": "Dead Hang",
@@ -351,14 +404,6 @@ const DEFAULT_PLAN = {
         "reps": "20-40 seg",
         "rest": 90,
         "unit": "seg"
-      },
-      {
-        "name": "Pike Push-up ISO",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "15-30",
-        "rest": 90,
-        "unit": "reps"
       },
       {
         "name": "Plancha lateral",
@@ -481,11 +526,19 @@ const DEFAULT_PLAN = {
   "6": {
     "name": "Sábado",
     "type": "workout",
-    "label": "Piernas",
-    "duration": 60,
+    "label": "Piernas + Pliométrico",
+    "duration": 70,
     "color": "#ffa502",
-    "warmup": "5 min bici + movilidad de cadera + sentadilla sin peso x15 + saltos sin peso x10 + 2 series squat jump al 30% y al 50%",
+    "warmup": "5 min bici + movilidad de cadera + sentadilla sin peso x15 + movilidad de tobillo",
     "exercises": [
+      {
+        "name": "Golpeo explosivo en saco",
+        "type": "cardio",
+        "sets": 3,
+        "reps": "30s máxima potencia",
+        "rest": 90,
+        "unit": "min"
+      },
       {
         "name": "Sentadilla con salto lastrado",
         "type": "fuerza",
