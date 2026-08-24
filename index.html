@@ -215,66 +215,14 @@
 const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
-    "type": "workout",
-    "label": "Full Body Fuerza",
-    "duration": 55,
-    "color": "#bf5af2",
-    "warmup": "5 min cardio suave + 1 serie de cada compuesto del día al 40% y al 60%",
-    "exercises": [
-      {
-        "name": "Extensión de cuádriceps",
-        "type": "fuerza",
-        "sets": 4,
-        "reps": "6",
-        "rest": 120,
-        "unit": "kg"
-      },
-      {
-        "name": "Press pecho máquina (pesado)",
-        "type": "fuerza",
-        "sets": 5,
-        "reps": "3",
-        "rest": 180,
-        "unit": "kg"
-      },
-      {
-        "name": "Remo en máquina (pesado)",
-        "type": "fuerza",
-        "sets": 5,
-        "reps": "3",
-        "rest": 180,
-        "unit": "kg"
-      },
-      {
-        "name": "Peso muerto rumano",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "5",
-        "rest": 150,
-        "unit": "kg"
-      },
-      {
-        "name": "Superserie: Curl bíceps en polea",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "10",
-        "rest": 0,
-        "unit": "kg"
-      },
-      {
-        "name": "Superserie: Extensión tríceps en polea",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "10",
-        "rest": 90,
-        "unit": "kg"
-      }
-    ]
+    "type": "rest",
+    "label": "Descanso Total",
+    "color": "#bf5af2"
   },
   "1": {
     "name": "Lunes",
     "type": "cardio",
-    "label": "Zona 2 + Movilidad",
+    "label": "Descanso Activo",
     "duration": 55,
     "color": "#5ac8fa",
     "warmup": "3 min bici muy suave + movilidad articular general (caderas, hombros, tobillo)",
@@ -791,7 +739,7 @@ function renderHoy(dayOverride) {
   document.getElementById('headerSub').textContent=formatDateLong(now);
   const page=document.getElementById('pageHoy'); let html='';
   html+='<div class="day-selector">';
-  for(let i=1;i<=6;i++){const d=PLAN[i];html+=`<div class="day-chip ${i===todayDow?'active':''}" onclick="renderHoy(${i})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label.split(' ')[0]}</small></div>`;}
+  for(let i=1;i<=6;i++){const d=PLAN[i];html+=`<div class="day-chip ${i===todayDow?'active':''}${d.type==='rest'?' rest':''}" onclick="renderHoy(${i})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label.split(' ')[0]}</small></div>`;}
   const d0=PLAN[0];html+=`<div class="day-chip ${0===todayDow?'active':''}${d0.type==='rest'?' rest':''}" onclick="renderHoy(0)">${d0.name}<br><small style="font-size:10px;opacity:0.8">${d0.label.split(' ')[0]}</small></div></div>`;
   if(plan.type==='rest'){html+=`<div class="card" style="text-align:center;padding:40px 20px"><div style="font-size:48px;margin-bottom:12px">😴</div><div style="font-size:20px;font-weight:800;margin-bottom:8px">Descanso Total</div><div style="font-size:14px;color:var(--text2)">El descanso también es entrenamiento.<br>Recupera y vuelve mañana más fuerte.</div></div>`;page.innerHTML=html;return;}
   html+=`<div class="card" style="border-left:3px solid ${plan.color}"><div class="day-badge" style="background:${plan.color}">${plan.name}</div><div class="workout-title">${plan.label}</div><div class="workout-meta">⏱ ~${plan.duration} min &nbsp;·&nbsp; ${plan.exercises.length} ejercicios</div></div>`;
