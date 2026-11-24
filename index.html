@@ -215,152 +215,163 @@
 const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
-    "type": "rest",
-    "label": "Descanso Total",
-    "color": "#bf5af2"
-  },
-  "1": {
-    "name": "Lunes",
     "type": "cardio",
-    "label": "Descanso Activo",
-    "duration": 70,
+    "label": "Cardio Zona 2",
+    "duration": 40,
     "color": "#5ac8fa",
-    "warmup": "3 min bici muy suave + movilidad articular general (caderas, hombros, tobillo)",
+    "warmup": "3 min caminando suave + movilidad articular general",
     "exercises": [
       {
-        "name": "Bici zona 2",
+        "name": "Zona 2 (cinta inclinada, bici o caminar rápido)",
         "type": "cardio",
         "sets": 1,
-        "reps": "40 min continuo (65-70% FC máx)",
+        "reps": "30-40 min continuo (65-70% FC máx)",
         "rest": 0,
         "unit": "min",
         "hasKm": true
       },
       {
-        "name": "Dead Hang",
-        "type": "isometrico",
+        "name": "Movilidad y estiramientos",
+        "type": "movilidad",
+        "sets": 1,
+        "reps": "10 min",
+        "rest": 0,
+        "unit": "min"
+      }
+    ]
+  },
+  "1": {
+    "name": "Lunes",
+    "type": "workout",
+    "label": "Torso Fuerza + Volumen",
+    "duration": 60,
+    "color": "#ff4757",
+    "warmup": "5 min bici o elíptica suave + rotaciones de hombro + 2 series de aproximación de press banca (40% y 60%)",
+    "exercises": [
+      {
+        "name": "Press banca",
+        "type": "fuerza",
         "sets": 3,
-        "reps": "max seg",
+        "reps": "6-8",
+        "rest": 150,
+        "unit": "kg"
+      },
+      {
+        "name": "Dominadas lastradas o jalón",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "6-10",
+        "rest": 120,
+        "unit": "kg+"
+      },
+      {
+        "name": "Press inclinado con mancuernas",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "8-12",
         "rest": 90,
-        "unit": "seg"
+        "unit": "kg"
       },
       {
-        "name": "Hollow hold",
-        "type": "core",
+        "name": "Remo con pecho apoyado",
+        "type": "hipertrofia",
         "sets": 3,
-        "reps": "max seg",
+        "reps": "8-12",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Elevaciones laterales",
+        "type": "acabado",
+        "sets": 3,
+        "reps": "12-20",
         "rest": 60,
-        "unit": "seg"
+        "unit": "kg"
       },
       {
-        "name": "Estiramiento glúteo/piramidal (posición 4)",
-        "type": "movilidad",
+        "name": "Curl de bíceps",
+        "type": "acabado",
         "sets": 2,
-        "reps": "30-45 seg por lado",
-        "rest": 15,
-        "unit": "seg"
+        "reps": "10-12",
+        "rest": 60,
+        "unit": "kg"
       },
       {
-        "name": "Postura del niño (Balasana)",
-        "type": "movilidad",
-        "sets": 1,
-        "reps": "60 seg respiración profunda",
-        "rest": 15,
-        "unit": "seg"
-      },
-      {
-        "name": "Rodillas al pecho alternas",
-        "type": "movilidad",
-        "sets": 1,
-        "reps": "20 por lado (pausado)",
-        "rest": 15,
-        "unit": "reps"
-      },
-      {
-        "name": "Estiramiento psoas (zancada en suelo)",
-        "type": "movilidad",
+        "name": "Tríceps en polea",
+        "type": "acabado",
         "sets": 2,
-        "reps": "30 seg por pierna",
-        "rest": 15,
-        "unit": "seg"
+        "reps": "10-12",
+        "rest": 60,
+        "unit": "kg"
       }
     ]
   },
   "2": {
     "name": "Martes",
     "type": "workout",
-    "label": "Espalda + Bíceps",
-    "duration": 55,
-    "color": "#1e90ff",
-    "warmup": "5 min remo ergómetro suave + movilidad escapular + 2 series peso muerto al 40% y al 60%",
+    "label": "Pierna A",
+    "duration": 60,
+    "color": "#ffa502",
+    "warmup": "5 min bici + movilidad de cadera y tobillo + sentadilla sin peso x15 + 2 series de aproximación (40% y 60%)",
     "exercises": [
       {
-        "name": "Peso muerto en máquina / trap bar",
+        "name": "Sentadilla",
         "type": "fuerza",
-        "sets": 4,
-        "reps": "4-5",
-        "rest": 180,
+        "sets": 3,
+        "reps": "6-10",
+        "rest": 150,
         "unit": "kg"
       },
       {
-        "name": "Remo en polea baja",
-        "type": "hipertrofia",
-        "sets": 4,
-        "reps": "8-10",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Dominadas lastradas",
+        "name": "Peso muerto rumano",
         "type": "hipertrofia",
         "sets": 3,
         "reps": "8-10",
-        "rest": 90,
-        "unit": "kg+"
+        "rest": 120,
+        "unit": "kg"
       },
       {
-        "name": "Face pull en polea",
+        "name": "Prensa",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "10-12",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Curl femoral",
         "type": "acabado",
         "sets": 3,
-        "reps": "15",
+        "reps": "10-15",
         "rest": 60,
         "unit": "kg"
       },
       {
-        "name": "Curl bíceps mancuernas",
+        "name": "Gemelos",
         "type": "acabado",
         "sets": 3,
-        "reps": "12-15",
-        "rest": 75,
+        "reps": "12-20",
+        "rest": 60,
         "unit": "kg"
+      },
+      {
+        "name": "Abdominales",
+        "type": "core",
+        "sets": 3,
+        "reps": "12-15",
+        "rest": 45,
+        "unit": "reps"
       }
     ]
   },
   "3": {
     "name": "Miércoles",
     "type": "cardio",
-    "label": "Cardio Híbrido + CNS",
-    "duration": 75,
-    "color": "#5ac8fa",
-    "warmup": "3 min bici suave + movilidad articular general",
+    "label": "Cardio Intervalos en Cinta",
+    "duration": 35,
+    "color": "#1e90ff",
+    "warmup": "5 min caminando a 5-6 km/h en cinta + movilidad de cadera y tobillos",
     "exercises": [
-      {
-        "name": "Zona 2 en bici",
-        "type": "cardio",
-        "sets": 1,
-        "reps": "20 min continuo (65-70% FC máx)",
-        "rest": 0,
-        "unit": "min",
-        "hasKm": true
-      },
-      {
-        "name": "HIIT en bici",
-        "type": "cardio",
-        "sets": 4,
-        "reps": "3 min intenso ~28 km/h / 3 min recuperación ~23 km/h",
-        "rest": 0,
-        "unit": "min"
-      },
       {
         "name": "Intervalos en cinta",
         "type": "cardio",
@@ -368,88 +379,83 @@ const DEFAULT_PLAN = {
         "reps": "2 min a 8 km/h con 1% pendiente / 1 min andando",
         "rest": 0,
         "unit": "min",
-        "treadmill": { "speed": 8, "incline": 1 }
+        "treadmill": {
+          "speed": 8,
+          "incline": 1
+        }
       },
       {
-        "name": "Sentadilla con salto explosiva",
-        "type": "fuerza",
-        "sets": 3,
-        "reps": "5 (máx potencia, sin lastre)",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Combinaciones en saco",
-        "type": "cardio",
-        "sets": 3,
-        "reps": "2 min",
-        "rest": 90,
+        "name": "Movilidad y estiramientos",
+        "type": "movilidad",
+        "sets": 1,
+        "reps": "10 min",
+        "rest": 0,
         "unit": "min"
-      },
-      {
-        "name": "Dead Hang",
-        "type": "isometrico",
-        "sets": 3,
-        "reps": "20-40 seg",
-        "rest": 90,
-        "unit": "seg"
-      },
-      {
-        "name": "Plancha lateral",
-        "type": "core",
-        "sets": 3,
-        "reps": "seg por lado",
-        "rest": 45,
-        "unit": "seg"
-      },
-      {
-        "name": "Hollow hold",
-        "type": "core",
-        "sets": 3,
-        "reps": "seg",
-        "rest": 45,
-        "unit": "seg"
       }
     ]
   },
   "4": {
     "name": "Jueves",
     "type": "workout",
-    "label": "Pecho + Tríceps",
-    "duration": 50,
-    "color": "#ff4757",
-    "warmup": "5 min bici suave + rotaciones de hombro + 2 series press banca al 40% y al 60%",
+    "label": "Push Pecho + Hombros + Tríceps",
+    "duration": 60,
+    "color": "#bf5af2",
+    "warmup": "5 min elíptica + rotaciones de hombro con banda + 2 series de aproximación de press inclinado",
     "exercises": [
       {
-        "name": "Press de pecho en máquina",
+        "name": "Press inclinado",
         "type": "fuerza",
-        "sets": 4,
-        "reps": "4-5",
-        "rest": 180,
-        "unit": "kg"
-      },
-      {
-        "name": "Press inclinado mancuernas",
-        "type": "hipertrofia",
         "sets": 3,
         "reps": "8-10",
-        "rest": 90,
+        "rest": 120,
         "unit": "kg"
       },
       {
-        "name": "Fondos en máquina",
+        "name": "Press de pecho en máquina",
         "type": "hipertrofia",
         "sets": 3,
         "reps": "10-12",
         "rest": 90,
-        "unit": "kg+"
+        "unit": "kg"
       },
       {
-        "name": "Extensiones tríceps polea",
+        "name": "Press militar",
+        "type": "fuerza",
+        "sets": 3,
+        "reps": "8-10",
+        "rest": 120,
+        "unit": "kg"
+      },
+      {
+        "name": "Elevaciones laterales",
+        "type": "hipertrofia",
+        "sets": 4,
+        "reps": "12-20",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Aperturas en polea",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "12-15",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Extensión de tríceps con cuerda",
         "type": "acabado",
         "sets": 3,
-        "reps": "15",
-        "rest": 75,
+        "reps": "10-15",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Extensión de tríceps sobre la cabeza",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "10-15",
+        "rest": 60,
         "unit": "kg"
       }
     ]
@@ -457,131 +463,155 @@ const DEFAULT_PLAN = {
   "5": {
     "name": "Viernes",
     "type": "workout",
-    "label": "Hombros + Core",
-    "duration": 50,
+    "label": "Pull Espalda + Bíceps",
+    "duration": 60,
     "color": "#2ed573",
-    "warmup": "5 min elíptica + rotaciones de manguito rotador con banda + 2 series press militar al 40% y al 60%",
+    "warmup": "5 min remo ergómetro suave + movilidad escapular + 2 series de aproximación de jalón o dominadas",
     "exercises": [
       {
-        "name": "Press de hombros en máquina",
+        "name": "Dominadas o jalón",
+        "type": "fuerza",
+        "sets": 3,
+        "reps": "8-12",
+        "rest": 120,
+        "unit": "kg+"
+      },
+      {
+        "name": "Remo con pecho apoyado",
         "type": "hipertrofia",
         "sets": 3,
-        "reps": "8-10",
+        "reps": "8-12",
         "rest": 90,
         "unit": "kg"
       },
       {
-        "name": "Elevaciones laterales",
+        "name": "Remo en polea",
         "type": "hipertrofia",
-        "sets": 5,
-        "reps": "12-15",
-        "rest": 75,
+        "sets": 2,
+        "reps": "10-12",
+        "rest": 90,
         "unit": "kg"
       },
       {
-        "name": "Pájaros inclinado",
+        "name": "Pullover en polea",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "12-15",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Pájaros / deltoide posterior",
+        "type": "acabado",
+        "sets": 3,
+        "reps": "15-20",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Curl con barra",
         "type": "hipertrofia",
         "sets": 3,
-        "reps": "15",
+        "reps": "8-12",
         "rest": 75,
         "unit": "kg"
       },
       {
-        "name": "Plancha",
-        "type": "core",
-        "sets": 4,
-        "reps": "seg",
+        "name": "Curl martillo",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "10-15",
         "rest": 60,
-        "unit": "seg"
+        "unit": "kg"
       },
       {
-        "name": "Dead bug",
-        "type": "core",
-        "sets": 4,
-        "reps": "10 por lado",
-        "rest": 60,
-        "unit": "reps"
-      },
-      {
-        "name": "Bird dog",
-        "type": "core",
-        "sets": 4,
-        "reps": "10 por lado",
-        "rest": 60,
-        "unit": "reps"
+        "name": "Cardio suave opcional",
+        "type": "cardio",
+        "sets": 1,
+        "reps": "15-20 min suaves (solo si recuperas bien)",
+        "rest": 0,
+        "unit": "min"
       }
     ]
   },
   "6": {
     "name": "Sábado",
     "type": "workout",
-    "label": "Piernas + Pliométrico",
-    "duration": 70,
-    "color": "#ffa502",
-    "warmup": "5 min bici + movilidad de cadera + sentadilla sin peso x15 + movilidad de tobillo",
+    "label": "Pierna B + Hombros",
+    "duration": 65,
+    "color": "#e8ff47",
+    "warmup": "5 min bici + movilidad de cadera + 2 series de aproximación de hack squat",
     "exercises": [
       {
-        "name": "Lanzamiento balón medicinal al suelo",
+        "name": "Hack squat",
         "type": "fuerza",
         "sets": 3,
-        "reps": "5 (máxima potencia)",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Sentadilla con salto lastrado",
-        "type": "fuerza",
-        "sets": 4,
-        "reps": "6-8",
+        "reps": "8-12",
         "rest": 120,
         "unit": "kg"
       },
       {
-        "name": "Hip thrust en máquina",
-        "type": "hipertrofia",
-        "sets": 4,
-        "reps": "10-12",
-        "rest": 120,
-        "unit": "kg"
-      },
-      {
-        "name": "Zancadas con mancuernas",
+        "name": "Hip thrust",
         "type": "hipertrofia",
         "sets": 3,
-        "reps": "12",
+        "reps": "8-12",
         "rest": 90,
         "unit": "kg"
       },
       {
-        "name": "Extensión cuádriceps máquina",
+        "name": "Curl femoral sentado",
         "type": "acabado",
         "sets": 3,
-        "reps": "15",
+        "reps": "10-15",
         "rest": 60,
         "unit": "kg"
       },
       {
-        "name": "Femoral tumbado máquina",
+        "name": "Extensión de cuádriceps",
         "type": "acabado",
-        "sets": 3,
-        "reps": "15",
+        "sets": 2,
+        "reps": "12-15",
         "rest": 60,
         "unit": "kg"
       },
       {
-        "name": "Gemelos sentado máquina",
+        "name": "Gemelos",
+        "type": "acabado",
+        "sets": 3,
+        "reps": "12-20",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Elevaciones laterales",
         "type": "acabado",
         "sets": 3,
         "reps": "15-20",
         "rest": 60,
         "unit": "kg"
+      },
+      {
+        "name": "Abdominales",
+        "type": "core",
+        "sets": 3,
+        "reps": "12-15",
+        "rest": 45,
+        "unit": "reps"
       }
     ]
   }
 };
+const PLAN_VERSION = 'recomp-2026-11';
 let PLAN = (() => {
   try {
     const p = localStorage.getItem('gymtracker_plan');
+    // Nueva versión del plan: se guarda copia del plan anterior y se usa el nuevo por defecto
+    if (localStorage.getItem('gymtracker_plan_version') !== PLAN_VERSION) {
+      if (p) localStorage.setItem('gymtracker_plan_backup', p);
+      localStorage.removeItem('gymtracker_plan');
+      localStorage.setItem('gymtracker_plan_version', PLAN_VERSION);
+      return DEFAULT_PLAN;
+    }
     if (!p) return DEFAULT_PLAN;
     const stored = JSON.parse(p);
     // Sync rest values by name: always inherit rest time from DEFAULT_PLAN
@@ -593,25 +623,13 @@ let PLAN = (() => {
         if (storedEx) storedEx.rest = defEx.rest;
       });
     });
-    if (!localStorage.getItem('gymtracker_treadmill_v1')) {
-      Object.entries(DEFAULT_PLAN).forEach(([dow, defDay]) => {
-        const storedDay = stored[dow];
-        if (!storedDay || !storedDay.exercises || storedDay.label !== defDay.label) return;
-        defDay.exercises.forEach((defEx, i) => {
-          if (defEx.treadmill && !storedDay.exercises.some(e => e.name === defEx.name)) {
-            storedDay.exercises.splice(Math.min(i, storedDay.exercises.length), 0, JSON.parse(JSON.stringify(defEx)));
-          }
-        });
-      });
-      localStorage.setItem('gymtracker_treadmill_v1', '1');
-      localStorage.setItem('gymtracker_plan', JSON.stringify(stored));
-    }
     return stored;
   } catch(e) { return DEFAULT_PLAN; }
 })();
 const PHASES = [
   { id:'volumen', name:'💪 Mini Volumen', color:'#1e90ff', start:'2026-04-01', end:'2026-06-30', kcal:'+200-300 kcal/día', protein:'160-175 g proteína', tip:'Come para crecer. Superávit pequeño. Empuja los pesos al máximo cada sesión.', goal:'Llegar a ~82 kg con más músculo', targetKg:82 },
   { id:'definicion', name:'🔥 Mini Definición', color:'#ff4757', start:'2026-07-01', end:'2026-08-10', kcal:'-400-500 kcal/día', protein:'170-180 g proteína', tip:'Mantén los pesos de volumen. No reduzcas series. El cardio del sábado es clave.', goal:'Llegar a ~79 kg definido para vacaciones', targetKg:79 },
+  { id:'recomposicion', name:'⚖️ Recomposición', color:'#2ed573', start:'2026-11-24', end:'2027-05-24', kcal:'~2.500 kcal/día', protein:'170 g proteína', tip:'Pésate por la mañana (media de 7 días) y mide la cintura una vez por semana. Ajusta ±100-150 kcal cada 2-3 semanas según peso, cintura y rendimiento.', goal:'Más músculo con la cintura controlada', targetKg:null },
 ];
 const VACATION_DATE = new Date('2026-08-10');
 function getCurrentPhase() { const today=formatDate(new Date()); return PHASES.find(p=>today>=p.start&&today<=p.end)||null; }
@@ -1457,12 +1475,12 @@ function renderProgreso(){
   const totalSessions=data.sessions.length,thisWeek=data.sessions.filter(s=>(new Date()-new Date(s.date))/(1000*60*60*24)<7).length;
   const lastW=data.weights.length>0?data.weights[data.weights.length-1]:null,phase=getCurrentPhase(),targetKg=phase?phase.targetKg:79;
   let html=`<div class="card"><div class="card-title">⚖️ Peso corporal</div><div class="weight-input-row"><input type="number" id="weightInput" class="weight-input-big" placeholder="${lastW?lastW.kg:'80.0'}" step="0.1" min="50" max="150"><button class="weight-save-btn" onclick="saveWeight()">Guardar</button></div>${lastW?`<div style="font-size:13px;color:var(--text2)">Último registro: <b style="color:#fff">${lastW.kg} kg</b> · ${formatDateLong2(lastW.date)}</div>`:''}</div>`;
-  if(lastW){const startKg=80,pctToGoal=Math.min(100,Math.max(0,Math.round(((startKg-lastW.kg)/(startKg-targetKg))*100))),diff=(lastW.kg-targetKg).toFixed(1);html+=`<div class="card"><div class="card-title">🎯 Objetivo — ${targetKg} kg</div><div style="font-size:13px;color:var(--text2);margin-bottom:10px">${diff>0?`Faltan ${diff} kg`:'¡Objetivo conseguido!'}</div><div class="phase-progress-bar" style="height:10px"><div class="phase-progress-fill" style="width:${pctToGoal}%;background:var(--accent)"></div></div><div class="phase-progress-label" style="color:var(--text2)"><span>Inicio 80 kg</span><span>${pctToGoal}%</span><span>Meta ${targetKg} kg</span></div></div>`;}
+  if(lastW&&targetKg){const startKg=80,pctToGoal=Math.min(100,Math.max(0,Math.round(((startKg-lastW.kg)/(startKg-targetKg))*100))),diff=(lastW.kg-targetKg).toFixed(1);html+=`<div class="card"><div class="card-title">🎯 Objetivo — ${targetKg} kg</div><div style="font-size:13px;color:var(--text2);margin-bottom:10px">${diff>0?`Faltan ${diff} kg`:'¡Objetivo conseguido!'}</div><div class="phase-progress-bar" style="height:10px"><div class="phase-progress-fill" style="width:${pctToGoal}%;background:var(--accent)"></div></div><div class="phase-progress-label" style="color:var(--text2)"><span>Inicio 80 kg</span><span>${pctToGoal}%</span><span>Meta ${targetKg} kg</span></div></div>`;}
   html+=`<div class="card" style="border-left:3px solid #5ac8fa"><div class="card-title">🫀 Objetivo cardiovascular</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0"><div style="background:var(--bg2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">RECUPERACIÓN</div><div style="font-size:22px;font-weight:800;color:#5ac8fa">~23 km/h</div><div style="font-size:11px;color:var(--text2)">~120-130 bpm</div></div><div style="background:var(--bg2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:11px;color:var(--text2);margin-bottom:4px">VO₂ MÁX</div><div style="font-size:22px;font-weight:800;color:#ff4757">~28 km/h</div><div style="font-size:11px;color:var(--text2)">~170-180 bpm</div></div></div><div style="font-size:12px;color:var(--text2);border-top:1px solid var(--bg2);padding-top:8px;margin-top:4px">🎯 Meta 8-12 semanas: mantener 28 km/h a <b style="color:#fff">155-160 bpm</b></div></div>`;
   html+=`<div class="stats-grid"><div class="stat-box"><div class="stat-value">${totalSessions}</div><div class="stat-label">Sesiones totales</div></div><div class="stat-box"><div class="stat-value">${thisWeek}</div><div class="stat-label">Esta semana</div></div></div>`;
   if(data.weights.length>=2)html+=`<div class="chart-container"><div class="chart-title">Evolución peso corporal</div><canvas id="weightChart" class="chart-canvas"></canvas></div>`;
   if(data.weights.length>0){html+=`<div class="card"><div class="card-title">Últimos registros de peso</div>`;const recent=[...data.weights].reverse().slice(0,7);recent.forEach((w,i)=>{const prev=recent[i+1];let delta='';if(prev){const d=(w.kg-prev.kg).toFixed(1);delta=d>0?`<span class="weight-delta-up">▲ +${d}</span>`:d<0?`<span class="weight-delta-down">▼ ${d}</span>`:`<span class="weight-delta-same">→ igual</span>`;}html+=`<div class="weight-history-item"><div><div class="weight-val">${w.kg} kg</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(w.date)}</div></div><div>${delta}</div></div>`;});html+=`</div>`;}
-  if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';html+=`<div class="day-selector" style="margin-bottom:16px">`;[{dow:1,name:'Lun',label:'Espalda',color:'#1e90ff'},{dow:2,name:'Mar',label:'Pecho',color:'#ff4757'},{dow:3,name:'Mié',label:'Hombros',color:'#2ed573'},{dow:4,name:'Jue',label:'Piernas',color:'#ffa502'},{dow:5,name:'Vie',label:'Full Body',color:'#bf5af2'},{dow:6,name:'Sáb',label:'Cardio',color:'#5ac8fa'}].forEach(d=>{html+=`<div class="day-chip ${d.dow==selectedDay?'active':''}" style="${d.dow==selectedDay?`background:${d.color};color:#000;border-color:${d.color}`:''}" onclick="selectProgressDay(${d.dow})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label}</small></div>`;});html+=`</div><div id="dayChartContainer"></div>`;}
+  if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';html+=`<div class="day-selector" style="margin-bottom:16px">`;[1,2,3,4,5,6,0].filter(i=>PLAN[i]&&PLAN[i].type!=='rest').map(i=>({dow:i,name:PLAN[i].name.slice(0,3),label:PLAN[i].label.split(' ')[0],color:PLAN[i].color})).forEach(d=>{html+=`<div class="day-chip ${d.dow==selectedDay?'active':''}" style="${d.dow==selectedDay?`background:${d.color};color:#000;border-color:${d.color}`:''}" onclick="selectProgressDay(${d.dow})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label}</small></div>`;});html+=`</div><div id="dayChartContainer"></div>`;}
   else html+=`<div class="empty-state" style="padding:30px 20px"><div class="big" style="font-size:32px">📈</div><p>Necesitas al menos 2 sesiones para ver la progresión de ejercicios.</p></div>`;
   const tmSessions=[];
   data.sessions.forEach(s=>s.exercises.forEach(e=>{if(e.speed>0){const done=e.sets.filter(x=>x.done).length;if(done>0)tmSessions.push({date:s.date,speed:e.speed,incline:e.incline||0,done,total:e.sets.length});}}));
@@ -1478,7 +1496,7 @@ function renderProgreso(){
 function saveWeight(){const inp=document.getElementById('weightInput'),kg=parseFloat(inp.value);if(!kg||kg<30||kg>300){showToast('Introduce un peso válido');return;}const data=getData(),today=formatDate(new Date());data.weights=data.weights.filter(w=>w.date!==today);data.weights.push({date:today,kg});data.weights.sort((a,b)=>a.date.localeCompare(b.date));saveData(data);showToast(`⚖️ ${kg} kg guardado`,'success');renderProgreso();}
 function renderWeightChart(data){if(chartInstances.weightChart)chartInstances.weightChart.destroy();const ctx=document.getElementById('weightChart')?.getContext('2d');if(!ctx)return;const points=data.weights.slice(-20);chartInstances.weightChart=new Chart(ctx,{type:'line',data:{labels:points.map(p=>formatDateShort(p.date)),datasets:[{label:'Peso (kg)',data:points.map(p=>p.kg),borderColor:'#e8ff47',backgroundColor:'#e8ff4720',borderWidth:2,pointBackgroundColor:'#e8ff47',pointRadius:5,tension:0.3,fill:true}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});}
 function selectProgressDay(dow){localStorage.setItem('gymtracker_progressDay',dow);renderProgreso();}
-function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo={1:{name:'Lunes',label:'Espalda + Bíceps',color:'#1e90ff'},2:{name:'Martes',label:'Pecho + Tríceps',color:'#ff4757'},3:{name:'Miércoles',label:'Hombros + Core',color:'#2ed573'},4:{name:'Jueves',label:'Piernas',color:'#ffa502'},5:{name:'Viernes',label:'Full Body Fuerza',color:'#bf5af2'},6:{name:'Sábado',label:'Cardio + Isométricos',color:'#5ac8fa'}};const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
+function renderDayChart(data,dow){const container=document.getElementById('dayChartContainer');if(!container)return;const dayInfo=Object.fromEntries(Object.entries(PLAN).map(([k,v])=>[k,{name:v.name,label:v.label,color:v.color}]));const info=dayInfo[dow];const daySessions=data.sessions.filter(s=>s.dow==dow).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));if(daySessions.length<2){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>Necesitas al menos 2 sesiones de ${info.name} para ver progresión.</p></div>`;return;}const allExercises=[];daySessions.forEach(s=>{s.exercises.forEach(ex=>{if((ex.unit==='kg'||ex.unit==='kg+')&&!allExercises.find(e=>e===ex.name)&&PLAN[dow]&&PLAN[dow].exercises&&PLAN[dow].exercises.some(p=>p.name===ex.name))allExercises.push(ex.name);});});const colors=['#1e90ff','#ff4757','#2ed573','#ffa502','#bf5af2','#5ac8fa','#e8ff47','#ff6b9d','#4ecdc4'];const datasets=[];allExercises.forEach((exName,idx)=>{const points=[];daySessions.forEach(s=>{const ex=s.exercises.find(e=>e.name===exName);if(ex){const sets=ex.sets.filter(st=>(st.kg!==undefined?st.kg:st.value)>0);if(sets.length>0){const maxW=Math.max(...sets.map(st=>st.kg!==undefined?st.kg:st.value));points.push({date:s.date,weight:maxW});}}});if(points.length>=1){datasets.push({label:exName,data:points,borderColor:colors[idx%colors.length],backgroundColor:colors[idx%colors.length]+'20',borderWidth:2.5,pointBackgroundColor:colors[idx%colors.length],pointRadius:6,pointHoverRadius:8,tension:0,fill:false,spanGaps:false});}});if(datasets.length===0){container.innerHTML=`<div class="empty-state" style="padding:40px 20px"><div class="big" style="font-size:32px">📊</div><p>No hay ejercicios con peso registrados.</p></div>`;return;}const allDates=[...new Set(daySessions.map(s=>s.date))];container.innerHTML=`<div class="chart-container" style="border-left:3px solid ${info.color};min-height:300px"><div class="chart-title">${info.name} — ${info.label}</div><canvas id="progressChart" style="max-height:400px"></canvas></div>`;setTimeout(()=>{const chartId='progressChart';if(chartInstances[chartId])chartInstances[chartId].destroy();const ctx=document.getElementById(chartId)?.getContext('2d');if(!ctx)return;chartInstances[chartId]=new Chart(ctx,{type:'line',data:{labels:allDates.map(d=>formatDateShort(d)),datasets:datasets.map(ds=>({...ds,data:allDates.map(date=>{const pt=ds.data.find(p=>p.date===date);return pt?pt.weight:null;})}))},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#aaa',font:{size:11},padding:8,usePointStyle:true,boxWidth:10}}},scales:{x:{ticks:{color:'#888',font:{size:11},maxRotation:0},grid:{color:'#222'}},y:{ticks:{color:'#888',font:{size:11}},grid:{color:'#222'},beginAtZero:false}}}});},50);}
 const AI_SYSTEM_PROMPT = `Eres un entrenador personal experto. Genera un plan de entrenamiento semanal en formato JSON exacto para una app de gimnasio.
 
 FORMATO OBLIGATORIO (devuelve SOLO el JSON, sin markdown, sin explicaciones):
