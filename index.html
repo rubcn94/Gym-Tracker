@@ -362,68 +362,12 @@ const DEFAULT_PLAN = {
   },
   "1": {
     "name": "Lunes",
-    "type": "workout",
-    "label": "Torso Fuerza + Intervalos",
-    "duration": 85,
-    "color": "#ff4757",
-    "warmup": "5 min bici o elíptica suave + rotaciones de hombro + 2 series de aproximación de press banca (40% y 60%)",
+    "type": "cardio",
+    "label": "Cardio Intervalos en Cinta",
+    "duration": 35,
+    "color": "#1e90ff",
+    "warmup": "5 min caminando a 5-6 km/h en cinta + movilidad de cadera y tobillos",
     "exercises": [
-      {
-        "name": "Press banca",
-        "type": "fuerza",
-        "sets": 3,
-        "reps": "6-8",
-        "rest": 150,
-        "unit": "kg"
-      },
-      {
-        "name": "Dominadas lastradas o jalón",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "6-10",
-        "rest": 120,
-        "unit": "kg+"
-      },
-      {
-        "name": "Press inclinado con mancuernas",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "8-12",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Remo con pecho apoyado",
-        "type": "hipertrofia",
-        "sets": 3,
-        "reps": "8-12",
-        "rest": 90,
-        "unit": "kg"
-      },
-      {
-        "name": "Elevaciones laterales",
-        "type": "acabado",
-        "sets": 3,
-        "reps": "12-20",
-        "rest": 60,
-        "unit": "kg"
-      },
-      {
-        "name": "Curl de bíceps",
-        "type": "acabado",
-        "sets": 2,
-        "reps": "10-12",
-        "rest": 60,
-        "unit": "kg"
-      },
-      {
-        "name": "Tríceps en polea",
-        "type": "acabado",
-        "sets": 2,
-        "reps": "10-12",
-        "rest": 60,
-        "unit": "kg"
-      },
       {
         "name": "Intervalos en cinta",
         "type": "cardio",
@@ -435,6 +379,14 @@ const DEFAULT_PLAN = {
           "speed": 8,
           "incline": 1
         }
+      },
+      {
+        "name": "Movilidad y estiramientos",
+        "type": "movilidad",
+        "sets": 1,
+        "reps": "10 min",
+        "rest": 0,
+        "unit": "min"
       }
     ]
   },
@@ -498,9 +450,69 @@ const DEFAULT_PLAN = {
   },
   "3": {
     "name": "Miércoles",
-    "type": "rest",
-    "label": "Descanso Total",
-    "color": "#bf5af2"
+    "type": "workout",
+    "label": "Torso Fuerza + Volumen",
+    "duration": 60,
+    "color": "#ff4757",
+    "warmup": "5 min bici o elíptica suave + rotaciones de hombro + 2 series de aproximación de press banca (40% y 60%)",
+    "exercises": [
+      {
+        "name": "Press banca",
+        "type": "fuerza",
+        "sets": 3,
+        "reps": "6-8",
+        "rest": 150,
+        "unit": "kg"
+      },
+      {
+        "name": "Dominadas lastradas o jalón",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "6-10",
+        "rest": 120,
+        "unit": "kg+"
+      },
+      {
+        "name": "Press inclinado con mancuernas",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "8-12",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Remo con pecho apoyado",
+        "type": "hipertrofia",
+        "sets": 3,
+        "reps": "8-12",
+        "rest": 90,
+        "unit": "kg"
+      },
+      {
+        "name": "Elevaciones laterales",
+        "type": "acabado",
+        "sets": 3,
+        "reps": "12-20",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Curl de bíceps",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "10-12",
+        "rest": 60,
+        "unit": "kg"
+      },
+      {
+        "name": "Tríceps en polea",
+        "type": "acabado",
+        "sets": 2,
+        "reps": "10-12",
+        "rest": 60,
+        "unit": "kg"
+      }
+    ]
   },
   "4": {
     "name": "Jueves",
