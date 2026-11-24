@@ -212,6 +212,147 @@
   <div id="editSessionContent"></div>
 </div>
 <script>
+// ===== Pulso en vivo: Web Bluetooth con el perfil estándar Heart Rate (0x180D) =====
+window.HR=(function(){
+  const S={dev:null,connected:false,sim:false,simTimer:null,manualDisc:false,bpm:0,rec:false,owner:null,samples:[],trace:[],hrmax:parseInt(localStorage.getItem('gymtracker_hrmax'))||187,msg:'',wake:null};
+  const ZC=['','#8e8e93','#5ac8fa','#2ed573','#ffa502','#ff4757'];
+  const ZN=['','Z1 muy suave','Z2 aeróbica','Z3 moderada','Z4 intensa','Z5 máxima'];
+  const zoneOf=b=>{const p=b/S.hrmax*100;return p<60?1:p<70?2:p<80?3:p<90?4:5;};
+  const dateKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+  const key=(dow,idx)=>'hr_'+dateKey()+'_'+dow+'_'+idx;
+  const fmt=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+  try{Object.keys(localStorage).filter(k=>k.startsWith('hr_')&&!k.startsWith('hr_'+dateKey()+'_')).forEach(k=>localStorage.removeItem(k));}catch(e){}
+
+  // Formato del estándar: bit 0 de las flags = valor de 16 bits (si no, 8 bits)
+  function parse(dv){return (dv.getUint8(0)&1)?dv.getUint16(1,true):dv.getUint8(1);}
+
+  function onBpm(b){
+    if(!(b>=30&&b<=230))return;
+    S.bpm=b;S.trace.push(b);if(S.trace.length>90)S.trace.shift();
+    if(S.rec)S.samples.push([Date.now(),b]);
+    update();
+  }
+
+  function summarize(samples){
+    if(samples.length<10)return null;
+    const t0=samples[0][0];let sum=0,max=0,min=999;const z=[0,0,0,0,0,0];
+    for(let i=0;i<samples.length;i++){
+      const b=samples[i][1];sum+=b;if(b>max)max=b;if(b<min)min=b;
+      const dt=i<samples.length-1?Math.min(5,(samples[i+1][0]-samples[i][0])/1000):1;
+      z[zoneOf(b)]+=dt;
+    }
+    const secs=Math.round((samples[samples.length-1][0]-t0)/1000);
+    const step=Math.max(1,Math.ceil(samples.length/120));
+    const pts=[];for(let i=0;i<samples.length;i+=step)pts.push([Math.round((samples[i][0]-t0)/1000),samples[i][1]]);
+    return {avg:Math.round(sum/samples.length),max:max,min:min,secs:secs,hrmax:S.hrmax,zones:z.slice(1).map(Math.round),pts:pts};
+  }
+
+  async function attach(){
+    const srv=await S.dev.gatt.connect();
+    const svc=await srv.getPrimaryService('heart_rate');
+    const ch=await svc.getCharacteristic('heart_rate_measurement');
+    ch.addEventListener('characteristicvaluechanged',e=>onBpm(parse(e.target.value)));
+    await ch.startNotifications();
+    S.connected=true;S.sim=false;S.msg='';update();
+  }
+  async function onDisc(){
+    S.connected=false;update();
+    for(let i=0;i<5&&!S.manualDisc&&!S.connected;i++){
+      S.msg='Reconectando… ('+(i+1)+'/5)';update();
+      await new Promise(r=>setTimeout(r,2500));
+      try{await attach();return;}catch(e){}
+    }
+    if(!S.connected&&!S.manualDisc){S.msg='Sensor desconectado';update();}
+  }
+  function disconnect(){S.manualDisc=true;try{if(S.dev&&S.dev.gatt&&S.dev.gatt.connected)S.dev.gatt.disconnect();}catch(e){}S.connected=false;S.bpm=0;S.msg='';update();}
+  async function connect(){
+    if(S.connected&&!S.sim){disconnect();return;}
+    if(S.sim){stopSim();S.connected=false;S.bpm=0;}
+    if(!navigator.bluetooth){S.msg='Este navegador no permite Bluetooth. Usa Chrome en Android.';update();return;}
+    try{
+      S.manualDisc=false;
+      S.dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}]});
+      S.dev.addEventListener('gattserverdisconnected',onDisc);
+      S.msg='Conectando…';update();
+      await attach();
+    }catch(e){S.msg=(e&&e.name==='NotFoundError')?'':'No se pudo conectar: '+((e&&e.message)||e);update();}
+  }
+
+  // Simulación para probar la pantalla sin sensor (no se guarda en el historial)
+  function stopSim(){if(S.simTimer){clearInterval(S.simTimer);S.simTimer=null;}S.sim=false;}
+  function sim(){
+    if(S.connected&&!S.sim)disconnect();
+    if(S.sim){stopSim();S.connected=false;S.bpm=0;S.msg='';update();return;}
+    S.sim=true;S.connected=true;S.bpm=0;S.msg='Modo simulación: no se guarda en el historial';
+    let t=0;
+    S.simTimer=setInterval(()=>{t++;const target=(t%180)<120?160:115;onBpm(Math.round(S.bpm>30?S.bpm+(target-S.bpm)*0.08+(Math.random()*4-2):95));},1000);
+    update();
+  }
+
+  async function toggleRec(dow,idx){
+    const o=dow+'_'+idx;
+    if(S.rec&&S.owner===o){stopRec(dow,idx);return;}
+    if(S.rec){S.msg='Ya hay un registro en marcha en otro ejercicio';update();return;}
+    if(!S.connected){S.msg='Conecta primero el sensor (o usa la simulación)';update();return;}
+    S.rec=true;S.owner=o;S.samples=[];S.msg='';
+    try{if(navigator.wakeLock)S.wake=await navigator.wakeLock.request('screen');}catch(e){}
+    update();
+  }
+  function stopRec(dow,idx){
+    const sm=summarize(S.samples);S.rec=false;S.owner=null;S.samples=[];
+    try{if(S.wake){S.wake.release();S.wake=null;}}catch(e){}
+    if(S.sim){S.msg='Simulación detenida (no se guarda)';}
+    else if(sm){localStorage.setItem(key(dow,idx),JSON.stringify(sm));if(typeof scheduleAutoSave==='function')scheduleAutoSave(dow);S.msg='Registro guardado en la sesión';}
+    else S.msg='Muy pocas lecturas para guardar (mínimo ~10 s)';
+    update();
+  }
+  function load(dow,idx){try{return JSON.parse(localStorage.getItem(key(dow,idx))||'null');}catch(e){return null;}}
+  function setMax(v){const n=parseInt(v);if(n>=120&&n<=230){S.hrmax=n;localStorage.setItem('gymtracker_hrmax',n);update();}}
+
+  const BTN='background:var(--bg3);border:1px solid #333;color:var(--text);padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;min-height:44px;cursor:pointer;touch-action:manipulation';
+  function widget(dow,idx){
+    const o=dow+'_'+idx;
+    return '<div class="hrw" data-owner="'+o+'" style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-end"><div><span data-hr="bpm" style="font-size:36px;font-weight:800;line-height:1">--</span><span style="font-size:12px;color:var(--text2)"> bpm</span></div><div data-hr="zone" style="font-size:12px;font-weight:700;text-align:right"></div></div>'
+      +'<canvas data-hr="spark" width="300" height="40" style="width:100%;height:40px;margin-top:6px"></canvas>'
+      +'<div data-hr="stats" style="font-size:12px;color:var(--text2);margin-top:4px"></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button data-hr="connect" onclick="HR.connect()" style="'+BTN+'">❤️ Conectar sensor</button><button data-hr="rec" onclick="HR.toggleRec('+dow+','+idx+')" style="'+BTN+'">⏺ Registrar</button><button data-hr="sim" onclick="HR.sim()" style="'+BTN+'">Simular</button></div>'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:var(--text2)">FC máx<input type="number" class="set-input" value="'+S.hrmax+'" min="120" max="230" onchange="HR.setMax(this.value)" style="width:70px"><span>(220 − edad)</span></div>'
+      +'<div data-hr="msg" style="font-size:12px;color:var(--text2);margin-top:6px"></div>'
+      +'<div data-hr="last" style="font-size:12px;margin-top:6px"></div></div>';
+  }
+  function update(){
+    document.querySelectorAll('.hrw').forEach(w=>{
+      const o=w.dataset.owner,q=k=>w.querySelector('[data-hr="'+k+'"]');
+      const mine=S.rec&&S.owner===o,live=S.connected&&S.bpm>0;
+      q('bpm').textContent=live?S.bpm:'--';
+      if(live){const z=zoneOf(S.bpm);q('zone').textContent=ZN[z]+' · '+Math.round(S.bpm/S.hrmax*100)+'% FCmáx';q('zone').style.color=ZC[z];q('bpm').style.color=ZC[z];}
+      else{q('zone').textContent='';q('bpm').style.color='';}
+      q('connect').textContent=(S.connected&&!S.sim)?'Desconectar':'❤️ Conectar sensor';
+      q('sim').textContent=S.sim?'Parar simulación':'Simular';
+      q('rec').textContent=mine?'⏹ Parar y guardar':'⏺ Registrar';
+      let st='';
+      if(mine&&S.samples.length){let sum=0,mx=0;S.samples.forEach(s=>{sum+=s[1];if(s[1]>mx)mx=s[1];});st='⏺ '+fmt((Date.now()-S.samples[0][0])/1000)+' · media '+Math.round(sum/S.samples.length)+' · máx '+mx;}
+      q('stats').textContent=st;
+      q('msg').textContent=S.msg;
+      const p=o.split('_'),l=load(p[0],p[1]);
+      q('last').innerHTML=l?'Último registro de hoy: media <b>'+l.avg+'</b> · máx <b>'+l.max+'</b> · '+fmt(l.secs)+' · en Z2 '+fmt(l.zones[1]):'';
+      try{
+        const cv=q('spark'),c=cv.getContext&&cv.getContext('2d');
+        if(c&&S.trace.length>1){
+          c.clearRect(0,0,cv.width,cv.height);
+          const mn=Math.min.apply(null,S.trace.concat([60])),mx2=Math.max.apply(null,S.trace.concat([100]));
+          c.strokeStyle=ZC[zoneOf(S.bpm||60)];c.lineWidth=2;c.beginPath();
+          S.trace.forEach((b,i)=>{const x=i*(cv.width/(S.trace.length-1)),y=cv.height-4-(b-mn)/(mx2-mn)*(cv.height-8);i?c.lineTo(x,y):c.moveTo(x,y);});
+          c.stroke();
+        }
+      }catch(e){}
+    });
+  }
+  return {widget:widget,update:update,connect:connect,sim:sim,toggleRec:toggleRec,load:load,setMax:setMax,_parse:parse,_summarize:summarize,_state:S};
+})();
+</script>
+<script>
 const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
@@ -825,6 +966,7 @@ function renderHoy(dayOverride) {
   if(existingToday&&!hasTempForToday){html+=`<div class="card" style="text-align:center;background:#2ed57310;border:1px solid #2ed57340"><div style="font-size:24px;margin-bottom:6px">✅</div><div style="font-size:16px;font-weight:700;color:var(--green)">Sesión completada</div><div style="font-size:13px;color:var(--text2);margin-top:4px">Registrada hoy a las ${existingToday.time}</div></div>`;html+=`<button class="btn-secondary" onclick="startSession(${todayDow},true)">Registrar otra sesión</button>`;}
   else{plan.exercises.forEach((ex,i)=>{html+=renderExerciseInput(ex,i,todayDow,false);});html+=`<div class="autosave-badge" id="autosaveBadge">✓ Guardado automáticamente</div><button class="btn-finish" onclick="saveSession(${todayDow})">💾 Guardar Sesión</button>`;}
   page.innerHTML=html;
+  if(typeof HR!=='undefined')HR.update();
   hoyRenderedDow=todayDow;
   if(tempSession&&tempSession.dow===todayDow)restoreTempInputs(todayDow);
   updateRestTimerUI();
@@ -898,6 +1040,8 @@ function renderExerciseInput(ex,idx,dow,small){
     const tv=getTreadmillVals(ex,idx,dow);
     html+=`<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><div><label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">Velocidad (km/h)</label><input type="number" class="set-input" id="inp_speed_${dow}_${idx}" value="${tv.speed}" min="0" step="0.5" style="width:100%" oninput="saveTreadmill(${dow},${idx})"></div><div><label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">Pendiente (%)</label><input type="number" class="set-input" id="inp_incline_${dow}_${idx}" value="${tv.incline}" min="0" step="0.5" style="width:100%" oninput="saveTreadmill(${dow},${idx})"></div></div>`;
   }
+
+  if(!small&&(ex.treadmill||ex.hasKm)&&typeof HR!=='undefined'){html+=HR.widget(dow,idx);}
 
   if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${ex.rest},${dow},${idx},event)">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
@@ -1176,6 +1320,7 @@ function doAutoSave(dow){
       exData.speed=sp?parseFloat(sp.value)||0:ex.treadmill.speed;
       exData.incline=inc?parseFloat(inc.value)||0:ex.treadmill.incline;
     }
+    if(typeof HR!=='undefined'){const hrs=HR.load(dow,exIdx);if(hrs)exData.hr=hrs;}
     return exData;
   });
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
@@ -1214,6 +1359,7 @@ function saveSession(dow){
       exData.speed=sp?parseFloat(sp.value)||0:ex.treadmill.speed;
       exData.incline=inc?parseFloat(inc.value)||0:ex.treadmill.incline;
     }
+    if(typeof HR!=='undefined'){const hrs=HR.load(dow,exIdx);if(hrs)exData.hr=hrs;}
     return exData;
   });
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
@@ -1487,6 +1633,13 @@ function renderProgreso(){
   if(tmSessions.length){
     html+=`<div class="card" style="border-left:3px solid #5ac8fa"><div class="card-title">🏃 Intervalos en cinta</div>`;
     tmSessions.slice(0,6).forEach(t=>{html+=`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg2)"><span>${formatDateShort(t.date)}</span><span><b>${t.speed} km/h</b> · ${t.incline}% · ${t.done}/${t.total} series</span></div>`;});
+    html+=`</div>`;
+  }
+  const hrSessions=[];
+  data.sessions.forEach(s=>s.exercises.forEach(e=>{if(e.hr&&e.hr.avg)hrSessions.push({date:s.date,name:e.name,hr:e.hr});}));
+  if(hrSessions.length){
+    html+=`<div class="card" style="border-left:3px solid #ff4757"><div class="card-title">❤️ Pulso en cardio</div>`;
+    hrSessions.slice(0,6).forEach(h=>{const z2=Math.round(((h.hr.zones&&h.hr.zones[1])||0)/60);html+=`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg2)"><span>${formatDateShort(h.date)} · ${h.name.split(' ')[0]}</span><span>media <b>${h.hr.avg}</b> · máx <b>${h.hr.max}</b> · Z2 ${z2} min</span></div>`;});
     html+=`</div>`;
   }
   page.innerHTML=html;
