@@ -363,8 +363,8 @@ const DEFAULT_PLAN = {
   "1": {
     "name": "Lunes",
     "type": "workout",
-    "label": "Torso Fuerza + Volumen",
-    "duration": 60,
+    "label": "Torso Fuerza + Intervalos",
+    "duration": 85,
     "color": "#ff4757",
     "warmup": "5 min bici o elíptica suave + rotaciones de hombro + 2 series de aproximación de press banca (40% y 60%)",
     "exercises": [
@@ -423,6 +423,18 @@ const DEFAULT_PLAN = {
         "reps": "10-12",
         "rest": 60,
         "unit": "kg"
+      },
+      {
+        "name": "Intervalos en cinta",
+        "type": "cardio",
+        "sets": 6,
+        "reps": "2 min a 8 km/h con 1% pendiente / 1 min andando",
+        "rest": 0,
+        "unit": "min",
+        "treadmill": {
+          "speed": 8,
+          "incline": 1
+        }
       }
     ]
   },
@@ -486,33 +498,9 @@ const DEFAULT_PLAN = {
   },
   "3": {
     "name": "Miércoles",
-    "type": "cardio",
-    "label": "Cardio Intervalos en Cinta",
-    "duration": 35,
-    "color": "#1e90ff",
-    "warmup": "5 min caminando a 5-6 km/h en cinta + movilidad de cadera y tobillos",
-    "exercises": [
-      {
-        "name": "Intervalos en cinta",
-        "type": "cardio",
-        "sets": 6,
-        "reps": "2 min a 8 km/h con 1% pendiente / 1 min andando",
-        "rest": 0,
-        "unit": "min",
-        "treadmill": {
-          "speed": 8,
-          "incline": 1
-        }
-      },
-      {
-        "name": "Movilidad y estiramientos",
-        "type": "movilidad",
-        "sets": 1,
-        "reps": "10 min",
-        "rest": 0,
-        "unit": "min"
-      }
-    ]
+    "type": "rest",
+    "label": "Descanso Total",
+    "color": "#bf5af2"
   },
   "4": {
     "name": "Jueves",
