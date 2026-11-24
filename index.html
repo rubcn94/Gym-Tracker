@@ -356,30 +356,9 @@ window.HR=(function(){
 const DEFAULT_PLAN = {
   "0": {
     "name": "Domingo",
-    "type": "cardio",
-    "label": "Cardio Zona 2",
-    "duration": 40,
-    "color": "#5ac8fa",
-    "warmup": "3 min caminando suave + movilidad articular general",
-    "exercises": [
-      {
-        "name": "Zona 2 (cinta inclinada, bici o caminar rápido)",
-        "type": "cardio",
-        "sets": 1,
-        "reps": "30-40 min continuo (65-70% FC máx)",
-        "rest": 0,
-        "unit": "min",
-        "hasKm": true
-      },
-      {
-        "name": "Movilidad y estiramientos",
-        "type": "movilidad",
-        "sets": 1,
-        "reps": "10 min",
-        "rest": 0,
-        "unit": "min"
-      }
-    ]
+    "type": "rest",
+    "label": "Descanso Total",
+    "color": "#bf5af2"
   },
   "1": {
     "name": "Lunes",
@@ -605,7 +584,7 @@ const DEFAULT_PLAN = {
     "name": "Viernes",
     "type": "workout",
     "label": "Pull Espalda + Bíceps",
-    "duration": 60,
+    "duration": 85,
     "color": "#2ed573",
     "warmup": "5 min remo ergómetro suave + movilidad escapular + 2 series de aproximación de jalón o dominadas",
     "exercises": [
@@ -666,12 +645,13 @@ const DEFAULT_PLAN = {
         "unit": "kg"
       },
       {
-        "name": "Cardio suave opcional",
+        "name": "Zona 2 tras pesas (cinta inclinada, bici o caminar)",
         "type": "cardio",
         "sets": 1,
-        "reps": "15-20 min suaves (solo si recuperas bien)",
+        "reps": "25 min suaves (65-70% FC máx), después de la espalda",
         "rest": 0,
-        "unit": "min"
+        "unit": "min",
+        "hasKm": true
       }
     ]
   },
