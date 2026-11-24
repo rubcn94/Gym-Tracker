@@ -362,6 +362,15 @@ const DEFAULT_PLAN = {
         "unit": "min"
       },
       {
+        "name": "Intervalos en cinta",
+        "type": "cardio",
+        "sets": 6,
+        "reps": "2 min a 8 km/h con 1% pendiente / 1 min andando",
+        "rest": 0,
+        "unit": "min",
+        "treadmill": { "speed": 8, "incline": 1 }
+      },
+      {
         "name": "Sentadilla con salto explosiva",
         "type": "fuerza",
         "sets": 3,
@@ -584,6 +593,19 @@ let PLAN = (() => {
         if (storedEx) storedEx.rest = defEx.rest;
       });
     });
+    if (!localStorage.getItem('gymtracker_treadmill_v1')) {
+      Object.entries(DEFAULT_PLAN).forEach(([dow, defDay]) => {
+        const storedDay = stored[dow];
+        if (!storedDay || !storedDay.exercises || storedDay.label !== defDay.label) return;
+        defDay.exercises.forEach((defEx, i) => {
+          if (defEx.treadmill && !storedDay.exercises.some(e => e.name === defEx.name)) {
+            storedDay.exercises.splice(Math.min(i, storedDay.exercises.length), 0, JSON.parse(JSON.stringify(defEx)));
+          }
+        });
+      });
+      localStorage.setItem('gymtracker_treadmill_v1', '1');
+      localStorage.setItem('gymtracker_plan', JSON.stringify(stored));
+    }
     return stored;
   } catch(e) { return DEFAULT_PLAN; }
 })();
@@ -854,6 +876,11 @@ function renderExerciseInput(ex,idx,dow,small){
     html+=`<div style="margin-top:12px;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><label style="font-size:13px;font-weight:600;white-space:nowrap;">KM totales:</label><input type="number" class="set-input" id="inp_km_${dow}_${idx}" placeholder="km" value="${lastKm}" min="0" step="0.1" style="flex:1;max-width:100px" oninput="saveHIITKm(${dow},${idx},this.value)"></div>`;
   }
 
+  if(ex.treadmill){
+    const tv=getTreadmillVals(ex,idx,dow);
+    html+=`<div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;background:var(--bg2);border-radius:10px;"><div><label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">Velocidad (km/h)</label><input type="number" class="set-input" id="inp_speed_${dow}_${idx}" value="${tv.speed}" min="0" step="0.5" style="width:100%" oninput="saveTreadmill(${dow},${idx})"></div><div><label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:4px">Pendiente (%)</label><input type="number" class="set-input" id="inp_incline_${dow}_${idx}" value="${tv.incline}" min="0" step="0.5" style="width:100%" oninput="saveTreadmill(${dow},${idx})"></div></div>`;
+  }
+
   if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${ex.rest},${dow},${idx},event)">⏱ Iniciar</button></div>`;}
   return html+`</div>`;
 }
@@ -936,6 +963,17 @@ function restoreTempInputs(dow){
       if(btn&&d.done){btn.classList.add('done');btn.textContent='✓';inp?.classList.add('completed');}
     }
   });
+}
+function getTreadmillVals(ex,idx,dow){
+  try{const v=JSON.parse(localStorage.getItem('treadmill_'+ex.name)||'null');if(v&&v.speed>0)return v;}catch(e){}
+  return {speed:ex.treadmill.speed,incline:ex.treadmill.incline};
+}
+function saveTreadmill(dow,exIdx){
+  const ex=PLAN[dow].exercises[exIdx];
+  const sp=parseFloat(document.getElementById(`inp_speed_${dow}_${exIdx}`)?.value)||0;
+  const inc=parseFloat(document.getElementById(`inp_incline_${dow}_${exIdx}`)?.value)||0;
+  localStorage.setItem('treadmill_'+ex.name,JSON.stringify({speed:sp,incline:inc}));
+  scheduleAutoSave(dow);
 }
 function saveHIITKm(dow,exIdx,value){
   localStorage.setItem(`hiit_km_${dow}_${exIdx}`,value);
@@ -1115,6 +1153,11 @@ function doAutoSave(dow){
       const kmInput=document.getElementById(`inp_km_${dow}_${exIdx}`);
       exData.km=kmInput?parseFloat(kmInput.value)||0:0;
     }
+    if(ex.treadmill){
+      const sp=document.getElementById(`inp_speed_${dow}_${exIdx}`),inc=document.getElementById(`inp_incline_${dow}_${exIdx}`);
+      exData.speed=sp?parseFloat(sp.value)||0:ex.treadmill.speed;
+      exData.incline=inc?parseFloat(inc.value)||0:ex.treadmill.incline;
+    }
     return exData;
   });
   const session={date:dateStr,time:timeStr,dow,label:plan.label,exercises};
@@ -1147,6 +1190,11 @@ function saveSession(dow){
     if(ex.hasKm){
       const kmInput=document.getElementById(`inp_km_${dow}_${exIdx}`);
       exData.km=kmInput?parseFloat(kmInput.value)||0:0;
+    }
+    if(ex.treadmill){
+      const sp=document.getElementById(`inp_speed_${dow}_${exIdx}`),inc=document.getElementById(`inp_incline_${dow}_${exIdx}`);
+      exData.speed=sp?parseFloat(sp.value)||0:ex.treadmill.speed;
+      exData.incline=inc?parseFloat(inc.value)||0:ex.treadmill.incline;
     }
     return exData;
   });
@@ -1416,6 +1464,13 @@ function renderProgreso(){
   if(data.weights.length>0){html+=`<div class="card"><div class="card-title">Últimos registros de peso</div>`;const recent=[...data.weights].reverse().slice(0,7);recent.forEach((w,i)=>{const prev=recent[i+1];let delta='';if(prev){const d=(w.kg-prev.kg).toFixed(1);delta=d>0?`<span class="weight-delta-up">▲ +${d}</span>`:d<0?`<span class="weight-delta-down">▼ ${d}</span>`:`<span class="weight-delta-same">→ igual</span>`;}html+=`<div class="weight-history-item"><div><div class="weight-val">${w.kg} kg</div><div style="font-size:12px;color:var(--text2)">${formatDateLong2(w.date)}</div></div><div>${delta}</div></div>`;});html+=`</div>`;}
   if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';html+=`<div class="day-selector" style="margin-bottom:16px">`;[{dow:1,name:'Lun',label:'Espalda',color:'#1e90ff'},{dow:2,name:'Mar',label:'Pecho',color:'#ff4757'},{dow:3,name:'Mié',label:'Hombros',color:'#2ed573'},{dow:4,name:'Jue',label:'Piernas',color:'#ffa502'},{dow:5,name:'Vie',label:'Full Body',color:'#bf5af2'},{dow:6,name:'Sáb',label:'Cardio',color:'#5ac8fa'}].forEach(d=>{html+=`<div class="day-chip ${d.dow==selectedDay?'active':''}" style="${d.dow==selectedDay?`background:${d.color};color:#000;border-color:${d.color}`:''}" onclick="selectProgressDay(${d.dow})">${d.name}<br><small style="font-size:10px;opacity:0.8">${d.label}</small></div>`;});html+=`</div><div id="dayChartContainer"></div>`;}
   else html+=`<div class="empty-state" style="padding:30px 20px"><div class="big" style="font-size:32px">📈</div><p>Necesitas al menos 2 sesiones para ver la progresión de ejercicios.</p></div>`;
+  const tmSessions=[];
+  data.sessions.forEach(s=>s.exercises.forEach(e=>{if(e.speed>0){const done=e.sets.filter(x=>x.done).length;if(done>0)tmSessions.push({date:s.date,speed:e.speed,incline:e.incline||0,done,total:e.sets.length});}}));
+  if(tmSessions.length){
+    html+=`<div class="card" style="border-left:3px solid #5ac8fa"><div class="card-title">🏃 Intervalos en cinta</div>`;
+    tmSessions.slice(0,6).forEach(t=>{html+=`<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--bg2)"><span>${formatDateShort(t.date)}</span><span><b>${t.speed} km/h</b> · ${t.incline}% · ${t.done}/${t.total} series</span></div>`;});
+    html+=`</div>`;
+  }
   page.innerHTML=html;
   if(data.weights.length>=2)renderWeightChart(data);
   if(data.sessions.length>=2){const selectedDay=localStorage.getItem('gymtracker_progressDay')||'1';renderDayChart(data,selectedDay);}
