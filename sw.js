@@ -1,5 +1,5 @@
 // Service Worker para GymTracker PWA
-const CACHE_NAME = 'gymtracker-v16';
+const CACHE_NAME = 'gymtracker-v17';
 const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',

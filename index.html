@@ -51,6 +51,9 @@
     .ex-type.movilidad   { background: #5ac8fa20; color: #5ac8fa; }
     .ex-type.isometrico  { background: #e8ff4720; color: var(--accent); }
     .ex-prescription { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
+    .ex-cluster { font-size: 12px; color: var(--text2); background: var(--bg2); border-left: 3px solid var(--accent); border-radius: 8px; padding: 8px 10px; margin: -4px 0 10px; line-height: 1.4; }
+    .ex-tip { border-left-color: var(--text2); }
+    .ex-cluster + .ex-tip { margin-top: -4px; }
     .sets-table { width: 100%; border-collapse: collapse; }
     .sets-table th { font-size: 11px; color: var(--text2); text-align: left; padding: 0 4px 6px; font-weight: 500; }
     .sets-table td { padding: 3px 4px; }
@@ -378,7 +381,8 @@ const DEFAULT_PLAN = {
         "treadmill": {
           "speed": 8,
           "incline": 1
-        }
+        },
+        "tip": "En los tramos rápidos deberías llegar a ~90 % de tu FC máxima. Si el pulsómetro no llega, sube la velocidad. Sin agarrarte a la barandilla."
       },
       {
         "name": "Movilidad y estiramientos",
@@ -404,7 +408,10 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "6-10",
         "rest": 150,
-        "unit": "kg"
+        "unit": "kg",
+        "cluster": [4, 3, 3],
+        "clusterRest": 20,
+        "tip": "Baja hasta abajo (por debajo de la paralela): el glúteo crece el triple que con media sentadilla."
       },
       {
         "name": "Peso muerto rumano",
@@ -419,8 +426,9 @@ const DEFAULT_PLAN = {
         "type": "hipertrofia",
         "sets": 3,
         "reps": "10-12",
-        "rest": 90,
-        "unit": "kg"
+        "rest": 120,
+        "unit": "kg",
+        "tip": "Recorrido completo, hasta donde la cadera no se despegue del respaldo. Media repetición da menos fuerza y menos músculo."
       },
       {
         "name": "Curl femoral",
@@ -428,15 +436,17 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "10-15",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Si hay máquina sentada, mejor sentado: con la cadera doblada el femoral crece más."
       },
       {
         "name": "Gemelos",
         "type": "acabado",
-        "sets": 3,
+        "sets": 2,
         "reps": "12-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "De pie con la rodilla estirada y las puntas un poco hacia fuera. Baja hasta el máximo estiramiento. Al fallar, sigue con medias repeticiones desde abajo hasta no poder más."
       },
       {
         "name": "Abdominales",
@@ -444,7 +454,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "12-15",
         "rest": 45,
-        "unit": "reps"
+        "unit": "reps",
+        "tip": "Calidad, no cantidad: en la plancha, codos adelantados y glúteo apretado 20-30 s rinden más que aguantar minutos."
       }
     ]
   },
@@ -452,7 +463,7 @@ const DEFAULT_PLAN = {
     "name": "Miércoles",
     "type": "workout",
     "label": "Torso Fuerza + Volumen",
-    "duration": 60,
+    "duration": 50,
     "color": "#ff4757",
     "warmup": "5 min bici o elíptica suave + rotaciones de hombro + 2 series de aproximación de press banca (40% y 60%)",
     "exercises": [
@@ -461,8 +472,11 @@ const DEFAULT_PLAN = {
         "type": "fuerza",
         "sets": 3,
         "reps": "6-8",
-        "rest": 150,
-        "unit": "kg"
+        "rest": 180,
+        "unit": "kg",
+        "cluster": [3, 3, 2],
+        "clusterRest": 20,
+        "tip": "Baja la barra hasta el pecho, sin rebote."
       },
       {
         "name": "Dominadas lastradas o jalón",
@@ -470,15 +484,17 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "6-10",
         "rest": 120,
-        "unit": "kg+"
+        "unit": "kg+",
+        "tip": "Empieza bajando los hombros; cuerpo firme, sin balanceo. En jalón: codos hacia las costillas, nunca tras nuca."
       },
       {
         "name": "Press inclinado con mancuernas",
         "type": "hipertrofia",
         "sets": 3,
         "reps": "8-12",
-        "rest": 90,
-        "unit": "kg"
+        "rest": 0,
+        "unit": "kg",
+        "tip": "⇄ Superserie con el remo: al acabar la serie pasa directo al remo. Banco a ~30°, no a 45°."
       },
       {
         "name": "Remo con pecho apoyado",
@@ -486,7 +502,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "8-12",
         "rest": 90,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "⇄ Superserie con el press inclinado: descansa 90 s después de hacer los dos."
       },
       {
         "name": "Elevaciones laterales",
@@ -494,15 +511,17 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "12-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Sube con el meñique ligeramente arriba. En polea: cable a la altura de la rodilla e inclínate hacia la polea."
       },
       {
         "name": "Curl de bíceps",
         "type": "acabado",
         "sets": 2,
         "reps": "10-12",
-        "rest": 60,
-        "unit": "kg"
+        "rest": 0,
+        "unit": "kg",
+        "tip": "⇄ Superserie con el tríceps: al acabar pasa directo. Mejor en banco inclinado; baja en 3 s."
       },
       {
         "name": "Tríceps en polea",
@@ -510,7 +529,8 @@ const DEFAULT_PLAN = {
         "sets": 2,
         "reps": "10-12",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "⇄ Superserie con el curl: descansa 60 s después de hacer los dos. Con cuerda por encima de la cabeza (brazo arriba): crece bastante más."
       }
     ]
   },
@@ -528,7 +548,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "8-10",
         "rest": 120,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Banco a ~30°: a 45° trabaja más el hombro que el pecho."
       },
       {
         "name": "Press de pecho en máquina",
@@ -536,7 +557,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "10-12",
         "rest": 90,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Junta los omóplatos antes de empujar para notarlo en el pecho y no en el hombro."
       },
       {
         "name": "Press militar",
@@ -552,7 +574,8 @@ const DEFAULT_PLAN = {
         "sets": 4,
         "reps": "12-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Sube con el meñique ligeramente arriba. En polea: cable a la altura de la rodilla e inclínate hacia la polea."
       },
       {
         "name": "Aperturas en polea",
@@ -594,7 +617,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "8-12",
         "rest": 120,
-        "unit": "kg+"
+        "unit": "kg+",
+        "tip": "Empieza bajando los hombros; cuerpo firme, sin balanceo. En jalón: codos hacia las costillas, nunca tras nuca."
       },
       {
         "name": "Remo con pecho apoyado",
@@ -626,7 +650,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "15-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Alternativa igual de buena: face pull en polea con los codos altos."
       },
       {
         "name": "Curl con barra",
@@ -634,7 +659,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "8-12",
         "rest": 75,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Baja en 3 s, sin rebotar abajo: la mitad baja del recorrido es la que más cuenta."
       },
       {
         "name": "Curl martillo",
@@ -651,7 +677,8 @@ const DEFAULT_PLAN = {
         "reps": "25 min suaves (65-70% FC máx), después de la espalda",
         "rest": 0,
         "unit": "min",
-        "hasKm": true
+        "hasKm": true,
+        "tip": "Sin agarrarte a la barandilla: si te coges, gastas bastante menos."
       }
     ]
   },
@@ -677,7 +704,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "8-12",
         "rest": 90,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Arriba del todo, espinilla vertical. Pies más cerca: más cuádriceps; más lejos: más femoral."
       },
       {
         "name": "Curl femoral sentado",
@@ -693,15 +721,17 @@ const DEFAULT_PLAN = {
         "sets": 2,
         "reps": "12-15",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Respaldo reclinado hacia atrás. Última serie descendente: al fallo, baja ~30 % el peso y sigue."
       },
       {
         "name": "Gemelos",
         "type": "acabado",
-        "sets": 3,
+        "sets": 2,
         "reps": "12-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "De pie con la rodilla estirada y las puntas un poco hacia fuera. Baja hasta el máximo estiramiento. Al fallar, sigue con medias repeticiones desde abajo hasta no poder más."
       },
       {
         "name": "Elevaciones laterales",
@@ -709,7 +739,8 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "15-20",
         "rest": 60,
-        "unit": "kg"
+        "unit": "kg",
+        "tip": "Sube con el meñique ligeramente arriba. En polea: cable a la altura de la rodilla e inclínate hacia la polea."
       },
       {
         "name": "Abdominales",
@@ -717,12 +748,13 @@ const DEFAULT_PLAN = {
         "sets": 3,
         "reps": "12-15",
         "rest": 45,
-        "unit": "reps"
+        "unit": "reps",
+        "tip": "Calidad, no cantidad: en la plancha, codos adelantados y glúteo apretado 20-30 s rinden más que aguantar minutos."
       }
     ]
   }
 };
-const PLAN_VERSION = 'recomp-2026-11';
+const PLAN_VERSION = 'recomp-2026-11b';
 let PLAN = (() => {
   try {
     const p = localStorage.getItem('gymtracker_plan');
@@ -741,7 +773,14 @@ let PLAN = (() => {
       if (!storedDay || !storedDay.exercises) return;
       defDay.exercises.forEach(defEx => {
         const storedEx = storedDay.exercises.find(e => e.name === defEx.name);
-        if (storedEx) storedEx.rest = defEx.rest;
+        if (storedEx) {
+          storedEx.rest = defEx.rest;
+          // Cluster sets: heredar del plan por defecto (se añaden o se quitan)
+          if (defEx.cluster) { storedEx.cluster = defEx.cluster; storedEx.clusterRest = defEx.clusterRest; }
+          else { delete storedEx.cluster; delete storedEx.clusterRest; }
+          // Notas de técnica: siempre las del plan por defecto
+          if (defEx.tip) storedEx.tip = defEx.tip; else delete storedEx.tip;
+        }
       });
     });
     return stored;
@@ -978,6 +1017,12 @@ function renderExerciseInput(ex,idx,dow,small){
   const lastSets = getLastExerciseValues(ex.name);
 
   let html=`<div class="exercise-block" id="exblock_${idx}"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type}">${ex.type}</div></div><div class="ex-prescription">${ex.sets} series · ${ex.reps} reps${ex.rest>0?' · '+formatRest(ex.rest)+' descanso':''}</div>`;
+  if(Array.isArray(ex.cluster)&&ex.cluster.length>1){
+    html+=`<div class="ex-cluster">⚡ <b>Cluster</b>: cada serie en bloques de ${ex.cluster.join(' + ')} reps con ${ex.clusterRest||20} s entre bloques (barra en el soporte). Apunta el total de reps de la serie.</div>`;
+  }
+  if(ex.tip){
+    html+=`<div class="ex-cluster ex-tip">💡 ${ex.tip}</div>`;
+  }
 
   // Ejercicios de core: solo checkboxes simples
   if(ex.type==='core'){
@@ -1024,7 +1069,7 @@ function renderExerciseInput(ex,idx,dow,small){
 
   if(!small&&(ex.treadmill||ex.hasKm)&&typeof HR!=='undefined'){html+=HR.widget(dow,idx);}
 
-  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${ex.rest},${dow},${idx},event)">⏱ Iniciar</button></div>`;}
+  if(ex.rest>0){html+=`<div class="rest-timer" id="restbox_${dow}_${idx}"><span id="timerLabel_${dow}_${idx}">Descanso: <b>${formatRest(ex.rest)}</b></span><button id="timerBtn_${dow}_${idx}" style="margin-left:8px;background:var(--accent);border:none;color:#000;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-width:90px;min-height:44px;touch-action:manipulation" onclick="handleTimerBtn(${ex.rest},${dow},${idx},event)">⏱ Iniciar</button>${Array.isArray(ex.cluster)&&ex.cluster.length>1?`<button style="margin-left:8px;background:var(--bg2);border:1px solid var(--accent);color:var(--accent);padding:10px 12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;min-height:44px;touch-action:manipulation" onclick="startRest(${ex.clusterRest||20},${dow},${idx})">⚡ ${ex.clusterRest||20}s</button>`:''}</div>`;}
   return html+`</div>`;
 }
 function onSetChange(dow,exIdx,setIdx){
@@ -1197,7 +1242,8 @@ function resumeRest(){
 function handleTimerBtn(secs,dow,exIdx,e){
   if(e)e.stopPropagation();
   const st=restTimerState;
-  const isThis=st&&st.dow===dow&&st.exIdx===exIdx;
+  // Mismo ejercicio y misma duración (el mini-descanso de cluster no se confunde con el descanso entre series)
+  const isThis=st&&st.dow===dow&&st.exIdx===exIdx&&st.secs===secs;
   if(isThis&&st.running)stopRest();
   else if(isThis&&!st.running&&!st.done)resumeRest();
   else startRest(secs,dow,exIdx);
