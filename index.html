@@ -1011,14 +1011,15 @@ function getLastExerciseValues(exName){
   });
   return best?best.sets:null;
 }
+function repsText(ex){if(ex&&Array.isArray(ex.cluster)&&ex.cluster.length>1){const t=ex.cluster.reduce((a,b)=>a+b,0);return `${t} reps en bloques ${ex.cluster.join('+')}`;}return `${ex.reps} reps`;}
 function renderExerciseInput(ex,idx,dow,small){
   const isWeightEx = ex.unit==='kg' || ex.unit==='kg+';
   const isCoreEx = ex.type==='core' || ex.type==='cardio' || ex.type==='movilidad' || ex.type==='isometrico';
   const lastSets = getLastExerciseValues(ex.name);
 
-  let html=`<div class="exercise-block" id="exblock_${idx}"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type}">${ex.type}</div></div><div class="ex-prescription">${ex.sets} series · ${ex.reps} reps${ex.rest>0?' · '+formatRest(ex.rest)+' descanso':''}</div>`;
+  let html=`<div class="exercise-block" id="exblock_${idx}"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type}">${ex.type}</div></div><div class="ex-prescription">${ex.sets} series · ${repsText(ex)}${ex.rest>0?' · '+formatRest(ex.rest)+' descanso':''}</div>`;
   if(Array.isArray(ex.cluster)&&ex.cluster.length>1){
-    html+=`<div class="ex-cluster">⚡ <b>Cluster</b>: cada serie en bloques de ${ex.cluster.join(' + ')} reps con ${ex.clusterRest||20} s entre bloques (barra en el soporte). Apunta el total de reps de la serie.</div>`;
+    html+=`<div class="ex-cluster">⚡ <b>Cluster</b>: ${ex.cluster.map(r=>r+' reps').join(` → ${ex.clusterRest||20} s → `)}. Barra al soporte en cada pausa. En la casilla apunta el total (${ex.cluster.reduce((a,b)=>a+b,0)}). Si completas las 3 series, +2,5 kg la semana siguiente.</div>`;
   }
   if(ex.tip){
     html+=`<div class="ex-cluster ex-tip">💡 ${ex.tip}</div>`;
@@ -1531,7 +1532,7 @@ function renderEditExBlock(ex,exIdx,dow){
   const hasKgReps=ex.sets[0]&&ex.sets[0].kg!==undefined;
   const planEx=(PLAN[dow]&&PLAN[dow].exercises.find(e=>e.name===ex.name))||(PLAN[dow]&&PLAN[dow].exercises[exIdx]);
   const restSecs=planEx?planEx.rest:0;
-  const prescription=planEx?`${planEx.sets} series · ${planEx.reps} reps${restSecs>0?' · '+formatRest(restSecs)+' descanso':''}`:null;
+  const prescription=planEx?`${planEx.sets} series · ${repsText(planEx)}${restSecs>0?' · '+formatRest(restSecs)+' descanso':''}`:null;
   let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div>`;
   if(prescription)html+=`<div class="ex-prescription">${prescription}</div>`;
   html+=`<table class="sets-table"><tr><th style="width:28px">#</th>`;
@@ -1598,7 +1599,7 @@ function openAddSessionPage(dateStr,dowOverride){
 }
 function renderNewExBlock(ex,exIdx){
   const isWeightEx=(ex.unit==='kg'||ex.unit==='kg+')&&ex.type!=='core'&&ex.type!=='cardio'&&ex.type!=='movilidad'&&ex.type!=='isometrico';
-  let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div><div class="ex-prescription">${ex.sets} series · ${ex.reps} reps</div><table class="sets-table"><tr><th style="width:28px">#</th>`;
+  let html=`<div class="exercise-block"><div class="ex-header"><div class="ex-name">${ex.name}</div><div class="ex-type ${ex.type||''}">${ex.type||''}</div></div><div class="ex-prescription">${ex.sets} series · ${repsText(ex)}</div><table class="sets-table"><tr><th style="width:28px">#</th>`;
   if(isWeightEx){html+=`<th>KG</th><th>REPS</th>`;}
   else{html+=`<th>${(ex.unit||'VALOR').toUpperCase()}</th>`;}
   html+=`</tr>`;
